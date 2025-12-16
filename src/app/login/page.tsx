@@ -61,10 +61,16 @@ export default function LoginPage() {
           });
         } catch (signUpError: any) {
           console.error('Falha no cadastro:', signUpError);
+          let description = 'Não foi possível criar sua conta.';
+          if (signUpError.code === 'auth/weak-password') {
+            description = 'A senha deve ter pelo menos 6 caracteres.';
+          } else {
+            description = signUpError.message || description;
+          }
           toast({
             variant: 'destructive',
             title: 'Falha no cadastro',
-            description: signUpError.message || 'Não foi possível criar sua conta.',
+            description,
           });
         }
       } else {
