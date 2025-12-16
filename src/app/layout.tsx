@@ -28,7 +28,7 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <div className="relative flex min-h-screen flex-col">
             <Header />
-            <main className="flex-1 pt-16">{children}</main>
+            <main className="flex-1">{children}</main>
           </div>
           <Toaster />
         </FirebaseClientProvider>

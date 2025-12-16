@@ -104,7 +104,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="relative text-center py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-background/80 via-background/90">
+      <div className="relative text-center pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-background/80 via-background/90">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative">
           <div className="flex justify-center items-center mb-4">
