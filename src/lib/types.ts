@@ -38,4 +38,6 @@ export type SiteInfo = {
   heroTitle2: string;
   heroLocation: string;
   heroSlogan: string;
+  heroPhone: string;
+  heroPhoneDisplay: string;
 };

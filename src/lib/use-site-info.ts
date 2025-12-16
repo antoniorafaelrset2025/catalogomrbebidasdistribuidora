@@ -15,6 +15,8 @@ const defaultSiteInfo: SiteInfo = {
     heroTitle2: 'DISTRIBUIDORA',
     heroLocation: 'FORTALEZA',
     heroSlogan: 'Explore nossa seleção completa de tabacaria e bebidas premium',
+    heroPhone: '5585992234683',
+    heroPhoneDisplay: '(85) 99223-4683',
 };
 
 

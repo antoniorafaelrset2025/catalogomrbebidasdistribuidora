@@ -93,6 +93,14 @@
         "heroSlogan": {
           "type": "string",
           "description": "The slogan or tagline displayed in the hero section."
+        },
+        "heroPhone": {
+          "type": "string",
+          "description": "The phone number for WhatsApp, used to construct the link. Should only contain numbers."
+        },
+        "heroPhoneDisplay": {
+          "type": "string",
+          "description": "The formatted phone number to display on the page."
         }
       }
     }

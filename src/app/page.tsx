@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { doc, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
 
-type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation';
+type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation' | 'heroPhoneDisplay';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -93,7 +93,13 @@ export default function Home() {
   
   const handleUpdateSiteInfo = async () => {
     if (firestore && editingField && siteInfoRef) {
-      const data = { [editingField]: fieldValue };
+      const data: Partial<SiteInfo> = { [editingField]: fieldValue };
+
+      // If updating phone, also update the raw phone number for the link
+      if (editingField === 'heroPhoneDisplay') {
+        data.heroPhone = fieldValue.replace(/\D/g, '');
+      }
+
       updateDoc(siteInfoRef, data)
         .then(() => {
           toast({
@@ -225,10 +231,38 @@ export default function Home() {
                   </div>
                 )}
             </div>
-             <a href="https://wa.me/5585992234683" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
-              <WhatsappIcon />
-              <p className="text-muted-foreground font-semibold group-hover:underline">(85) 99223-4683</p>
-            </a>
+             <div className="flex items-center gap-2 group">
+              {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
+                <>
+                  {editingField === 'heroPhoneDisplay' && user ? (
+                    <div className="flex justify-center items-center gap-2">
+                        <Input
+                          type="text"
+                          value={fieldValue}
+                          onChange={(e) => setFieldValue(e.target.value)}
+                          className="text-muted-foreground font-semibold h-auto p-0 border-dashed text-center"
+                        />
+                        <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8"><Save className="w-4 h-4"/></Button>
+                        <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8">
+                          <X className="w-4 h-4" />
+                        </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
+                        <WhatsappIcon />
+                        <p className="text-muted-foreground font-semibold group-hover:underline">{siteInfo.heroPhoneDisplay}</p>
+                      </a>
+                      {user && (
+                        <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100">
+                            <Edit className="w-4 h-4"/>
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+             </div>
           </div>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
              {isSiteInfoLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : siteInfo.heroSlogan}
