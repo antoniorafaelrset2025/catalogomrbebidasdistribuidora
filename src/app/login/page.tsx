@@ -66,12 +66,13 @@ export default function LoginPage() {
                 username: username,
             };
             
+            // Non-blocking write to Firestore with proper error handling
             setDoc(userDocRef, newUserDoc).catch(() => {
-                // IMPORTANT: Do NOT send sensitive data like passwords here.
+                // The permission error emitter will create a detailed, safe error message
                 const permissionError = new FirestorePermissionError({
                     path: userDocRef.path,
                     operation: 'create',
-                    requestResourceData: { id: user.uid, username: username }, // Only safe data
+                    requestResourceData: newUserDoc, // This data is safe to log
                 });
                 errorEmitter.emit('permission-error', permissionError);
             });
