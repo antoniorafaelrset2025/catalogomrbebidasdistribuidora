@@ -18,16 +18,29 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
+  // We append a dummy domain to the username to make it a valid email for Firebase.
+  const getEmailFromUsername = (user: string) => `${user.toLowerCase().trim()}@mrdistribuidora.com`;
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!username) {
+        toast({
+            variant: 'destructive',
+            title: 'Usuário inválido',
+            description: 'Por favor, insira um nome de usuário.',
+        });
+        return;
+    }
     setIsLoading(true);
+    const email = getEmailFromUsername(username);
+    
     try {
       // Attempt to sign in first
       await signInWithEmailAndPassword(auth, email, password);
@@ -60,7 +73,7 @@ export default function LoginPage() {
         if (error.code === 'auth/wrong-password') {
           description = 'Senha incorreta. Verifique seus dados.';
         } else if (error.code === 'auth/invalid-email') {
-            description = 'O e-mail fornecido não é válido.';
+            description = 'O nome de usuário não é válido.';
         }
         toast({
           variant: 'destructive',
@@ -86,14 +99,14 @@ export default function LoginPage() {
         <form onSubmit={handleSignIn}>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Usuário (E-mail)</Label>
+              <Label htmlFor="username">Usuário</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="seunome@example.com"
+                id="username"
+                type="text"
+                placeholder="marcio"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 disabled={isLoading}
               />
             </div>
