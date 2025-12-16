@@ -258,15 +258,15 @@ export default function Home() {
           </div>
 
           <div className="mt-4 mx-auto w-fit max-w-full px-4">
-            <div className="grid grid-cols-2 gap-x-2 gap-y-2 sm:gap-x-4">
-              {/* Branch 1 - Left */}
+            <div className="grid grid-cols-2 gap-x-2 sm:gap-x-4">
+
               <div className="flex items-center gap-2 group justify-self-start">
                   {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                     <>
                       <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       {editingField === 'heroLocation' && user ? (
                         <div className="flex items-center gap-1">
-                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                         </div>
@@ -279,13 +279,13 @@ export default function Home() {
                     </>
                   )}
               </div>
-              {/* Branch 1 - Right */}
+              
               <div className="flex items-center gap-2 group justify-self-end">
                 {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
                   <>
                     {editingField === 'heroPhoneDisplay' && user ? (
                        <div className="flex items-center gap-1">
-                        <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                        <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                         <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                         <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                       </div>
@@ -302,14 +302,13 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Branch 2 - Left */}
               <div className="flex items-center gap-2 group justify-self-start">
                   {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                      <>
                       <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       {editingField === 'heroLocation2' && user ? (
                         <div className="flex items-center gap-1">
-                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                         </div>
@@ -322,13 +321,13 @@ export default function Home() {
                     </>
                   )}
               </div>
-              {/* Branch 2 - Right */}
+
               <div className="flex items-center gap-2 group justify-self-end">
                   {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
                      <>
                       {editingField === 'heroPhoneDisplay2' && user ? (
                          <div className="flex items-center gap-1">
-                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                         </div>
@@ -417,7 +416,7 @@ export default function Home() {
                              type="text"
                              value={newName}
                              onChange={(e) => setNewName(e.target.value)}
-                             className="text-2xl font-semibold leading-none tracking-tight h-auto"
+                             className="text-xl font-semibold leading-none tracking-tight h-auto"
                            />
                         ) : (
                           <CardTitle>{product.name}</CardTitle>
