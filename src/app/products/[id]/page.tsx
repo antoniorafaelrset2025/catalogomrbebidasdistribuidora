@@ -118,7 +118,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <p className="text-3xl font-semibold">
                   {product.price > 0
                     ? `R$${product.price.toFixed(2)}`
-                    : 'Preço sob consulta'}
+                    : 'Consulte'}
                 </p>
               )}
                {user && !isEditing && (
