@@ -377,9 +377,9 @@ export default function Home() {
             </div>
           </div>
 
-          <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-             {isSiteInfoLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : siteInfo.heroSlogan}
-          </p>
+          <div className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
+             {isSiteInfoLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : <p>{siteInfo.heroSlogan}</p>}
+          </div>
         </div>
       </div>
 
