@@ -1,8 +1,17 @@
+'use client';
+
+import { useState } from 'react';
 import { notFound } from 'next/navigation';
-import { products } from '@/lib/products';
+import { useDoc, useFirestore, useUser } from '@/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Edit, Save } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { Product } from '@/lib/types';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { useMemoFirebase } from '@/firebase/provider';
 
 type ProductPageProps = {
   params: {
@@ -10,18 +19,69 @@ type ProductPageProps = {
   };
 };
 
-export function generateStaticParams() {
-  return products.map((product) => ({
-    id: product.id,
-  }));
-}
-
 export default function ProductPage({ params }: ProductPageProps) {
-  const product = products.find((p) => p.id === params.id);
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const { toast } = useToast();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [newPrice, setNewPrice] = useState<number | string>('');
+
+  const productRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'products', params.id);
+  }, [firestore, params.id]);
+
+  const { data: product, isLoading } = useDoc<Product>(productRef);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <Skeleton className="h-8 w-1/4" />
+          <Skeleton className="h-12 w-3/4" />
+          <Skeleton className="h-10 w-1/3" />
+          <Separator />
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     notFound();
   }
+  
+  const handlePriceUpdate = async () => {
+    if (typeof newPrice !== 'number' || newPrice < 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Preço inválido',
+        description: 'Por favor, insira um número válido.',
+      });
+      return;
+    }
+    if (productRef) {
+      try {
+        await updateDoc(productRef, { price: newPrice });
+        toast({
+          title: 'Sucesso!',
+          description: 'O preço foi atualizado.',
+        });
+        setIsEditing(false);
+      } catch (error) {
+        console.error("Error updating price: ", error);
+        toast({
+            variant: 'destructive',
+            title: 'Erro ao atualizar',
+            description: 'Você não tem permissão para editar o preço.',
+        });
+      }
+    }
+  };
+
 
   return (
     <div className="bg-background">
@@ -37,9 +97,37 @@ export default function ProductPage({ params }: ProductPageProps) {
               </h1>
             </div>
 
-            <p className="text-3xl font-semibold">
-                {product.price > 0 ? `R$${product.price.toFixed(2)}` : 'Preço sob consulta'}
-            </p>
+            <div className="flex items-center gap-4">
+              {isEditing && user ? (
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      type="number"
+                      value={newPrice}
+                      onChange={(e) => setNewPrice(parseFloat(e.target.value))}
+                      className="text-3xl font-semibold w-48"
+                      placeholder={product.price > 0 ? product.price.toFixed(2) : '0.00'}
+                    />
+                    <Button onClick={handlePriceUpdate} size="icon"><Save /></Button>
+                    <Button onClick={() => setIsEditing(false)} variant="ghost" size="icon">
+                      <X className="w-5 h-5" />
+                    </Button>
+                  </div>
+              ) : (
+                <p className="text-3xl font-semibold">
+                  {product.price > 0
+                    ? `R$${product.price.toFixed(2)}`
+                    : 'Preço sob consulta'}
+                </p>
+              )}
+               {user && !isEditing && (
+                <Button onClick={() => {
+                  setIsEditing(true);
+                  setNewPrice(product.price > 0 ? product.price : '');
+                }} variant="outline" size="icon">
+                  <Edit className="w-5 h-5"/>
+                </Button>
+              )}
+            </div>
 
             <Separator />
 
@@ -60,3 +148,17 @@ export default function ProductPage({ params }: ProductPageProps) {
     </div>
   );
 }
+
+// This function is commented out because we are fetching data dynamically.
+// You can uncomment it if you want to pre-render these pages at build time.
+//
+// import { collection, getDocs } from 'firebase/firestore';
+// import { initializeFirebase } from '@/firebase';
+
+// export async function generateStaticParams() {
+//   const { firestore } = initializeFirebase();
+//   const productsCollection = collection(firestore, 'products');
+//   const productSnapshot = await getDocs(productsCollection);
+//   const products = productSnapshot.docs.map(doc => ({ id: doc.id }));
+//   return products;
+// }
