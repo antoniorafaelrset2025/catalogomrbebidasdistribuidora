@@ -6,7 +6,22 @@ export type Review = {
   comment: string;
 };
 
-export type Category = 'Cigarros Sousa Cruz' | 'Cigarros Nacional' | 'Fumos' | 'Seda' | 'Isqueiros';
+export type Category =
+  | 'Cigarros Sousa Cruz'
+  | 'Cigarros Nacional'
+  | 'Fumos'
+  | 'Seda'
+  | 'Isqueiros'
+  | 'LONG NECKS'
+  | 'CERVEJAS LATAS'
+  | 'CACHAÇAS 1L'
+  | 'CACHAÇAS MEIOTAS'
+  | 'VODKAS'
+  | 'GIN'
+  | 'WHISKYS'
+  | 'DESTILADOS'
+  | 'VINHOS'
+  | 'ENERGÉTICOS';
 
 export type Product = {
   id: string;

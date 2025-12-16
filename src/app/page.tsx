@@ -14,13 +14,23 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const { products, isLoading } = useProducts();
 
-  const categories = [
+  const categories: (Category | 'Todos')[] = [
     'Todos',
     'Cigarros Sousa Cruz',
     'Cigarros Nacional',
     'Fumos',
     'Seda',
     'Isqueiros',
+    'LONG NECKS',
+    'CERVEJAS LATAS',
+    'CACHAÇAS 1L',
+    'CACHAÇAS MEIOTAS',
+    'VODKAS',
+    'GIN',
+    'WHISKYS',
+    'DESTILADOS',
+    'VINHOS',
+    'ENERGÉTICOS',
   ];
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
 
