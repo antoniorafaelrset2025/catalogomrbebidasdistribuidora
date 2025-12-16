@@ -249,12 +249,12 @@ export default function Home() {
             />
           </div>
           <div className="flex flex-col items-center">
-            {isSiteInfoLoading ? <Skeleton className="h-16 w-3/4 mx-auto" /> : <div className="flex justify-center">{renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}</div>}
-            {isSiteInfoLoading ? <Skeleton className="h-14 w-full mx-auto mt-2" /> : <div className="flex justify-center">{renderEditableField('heroTitle2', siteInfo.heroTitle2, 'text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground')}</div>}
+            <div className="flex justify-center w-full">{renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}</div>
+            <div className="flex justify-center w-full">{renderEditableField('heroTitle2', siteInfo.heroTitle2, 'text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground')}</div>
           </div>
 
           <div className="mt-4 mx-auto w-fit max-w-full px-4">
-            <div className="grid grid-cols-2 gap-x-2 gap-y-2 text-sm sm:gap-x-4">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-2 sm:gap-x-4">
               {/* Branch 1 - Left */}
               <div className="flex items-center gap-2 group justify-self-start">
                   {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
@@ -268,7 +268,7 @@ export default function Home() {
                         </div>
                       ) : (
                         <div className="flex items-center gap-1">
-                          <p className="text-xs font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
+                          <p className="text-[11px] sm:text-xs font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
                           {user && <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                         </div>
                       )}
@@ -289,7 +289,7 @@ export default function Home() {
                        <div className="flex items-center gap-1">
                         <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                           <WhatsappIcon />
-                          <p className="text-xs font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
+                          <p className="text-[11px] sm:text-xs font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
                         </a>
                         {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                       </div>
@@ -311,7 +311,7 @@ export default function Home() {
                         </div>
                       ) : (
                         <div className="flex items-center gap-1">
-                          <p className="text-xs font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
+                          <p className="text-[11px] sm:text-xs font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
                           {user && <Button onClick={() => handleStartEditingField('heroLocation2', siteInfo.heroLocation2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                         </div>
                       )}
@@ -332,7 +332,7 @@ export default function Home() {
                          <div className="flex items-center gap-1">
                           <a href={`https://wa.me/${siteInfo.heroPhone2}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                             <WhatsappIcon />
-                            <p className="text-xs font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
+                            <p className="text-[11px] sm:text-xs font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
                           </a>
                           {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay2', siteInfo.heroPhoneDisplay2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                         </div>
