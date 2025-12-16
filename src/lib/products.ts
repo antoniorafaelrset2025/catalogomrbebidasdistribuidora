@@ -232,3 +232,5 @@ export const products: Product[] = [
   { id: 'prod-181', name: 'NIGHT POWER SABORES 2L', description: 'Garrafa de Night Power Sabores 2L.', price: 0, category: 'ENERGÉTICOS' },
   { id: 'prod-182', name: 'BALY 2L', description: 'Garrafa de Baly 2L.', price: 66.90, category: 'ENERGÉTICOS' },
 ];
+
+    

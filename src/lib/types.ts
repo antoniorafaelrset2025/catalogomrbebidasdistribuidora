@@ -30,3 +30,5 @@ export type Product = {
   price: number;
   category: Category;
 };
+
+    
