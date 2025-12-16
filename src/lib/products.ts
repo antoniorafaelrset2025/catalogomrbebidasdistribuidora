@@ -1,4 +1,3 @@
-
 import type { Product, Category } from './types';
 
 export const categories: Category[] = [
@@ -63,7 +62,7 @@ export const products: Product[] = [
   { id: 'prod-32', name: 'BIC', description: 'Isqueiro BIC.', price: 46.50, category: 'Isqueiros' },
   { id: 'prod-33', name: 'CRICKET', description: 'Isqueiro Cricket.', price: 26.90, category: 'Isqueiros' },
   { id: 'prod-34', name: 'GTI', description: 'Isqueiro GTI.', price: 20.70, category: 'Isqueiros' },
-  
+
   // LONG NECKS
   { id: 'prod-35', name: 'BEATS SENSE', description: 'Long neck Beats Sense.', price: 0, category: 'LONG NECKS' },
   { id: 'prod-36', name: 'BEATS RED MIX 12UNI', description: 'Pack com 12 unidades de Beats Red Mix.', price: 0, category: 'LONG NECKS' },
@@ -232,5 +231,3 @@ export const products: Product[] = [
   { id: 'prod-181', name: 'NIGHT POWER SABORES 2L', description: 'Garrafa de Night Power Sabores 2L.', price: 0, category: 'ENERGÉTICOS' },
   { id: 'prod-182', name: 'BALY 2L', description: 'Garrafa de Baly 2L.', price: 66.90, category: 'ENERGÉTICOS' },
 ];
-
-    

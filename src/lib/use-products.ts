@@ -12,28 +12,22 @@ let isSeeding = false;
 let seedingCompleted = false;
 
 async function seedDatabase(firestore: Firestore) {
-  if (isSeeding || seedingCompleted) return;
+  if (isSeeding) return;
 
   isSeeding = true;
   const productsCollectionRef = collection(firestore, 'products');
   
   try {
-    const snapshot = await getDocs(productsCollectionRef);
+    const batch = writeBatch(firestore);
+    staticProducts.forEach((product) => {
+      const docRef = doc(productsCollectionRef, product.id);
+      batch.set(docRef, product);
+    });
     
-    if (snapshot.empty) {
-      console.log('Database is empty. Seeding with initial products...');
-      const batch = writeBatch(firestore);
-      staticProducts.forEach((product) => {
-        const docRef = doc(productsCollectionRef, product.id);
-        batch.set(docRef, product);
-      });
-      
-      await batch.commit();
-      console.log('Database seeded successfully!');
-      seedingCompleted = true;
-    } else {
-      seedingCompleted = true;
-    }
+    await batch.commit();
+    console.log('Database re-seeded successfully with latest products!');
+    seedingCompleted = true;
+
   } catch (error) {
     // This might fail due to permissions, which is okay for non-authed users.
     // The static list will be used as a fallback.
@@ -48,6 +42,8 @@ export function useProducts() {
   const [initialLoading, setInitialLoading] = useState(true);
   
   useEffect(() => {
+    // We now attempt to seed every time the component mounts if not completed.
+    // This will overwrite existing data with the latest from products.ts
     if (firestore && !seedingCompleted) {
       seedDatabase(firestore);
     }
@@ -68,8 +64,6 @@ export function useProducts() {
   }, [isFirestoreLoading]);
 
   // Use firestore products if available, otherwise fallback to static products.
-  // This ensures that products are always displayed, even before Firestore has loaded
-  // or if the user is offline.
   const products = firestoreProducts && firestoreProducts.length > 0 ? firestoreProducts : staticProducts;
   const isLoading = initialLoading && isFirestoreLoading;
 

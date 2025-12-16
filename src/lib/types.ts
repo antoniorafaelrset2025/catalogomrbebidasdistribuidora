@@ -21,7 +21,8 @@ export type Category =
   | 'WHISKYS'
   | 'DESTILADOS'
   | 'VINHOS'
-  | 'ENERGÉTICOS';
+  | 'ENERGÉTICOS'
+  | 'BEBIDAS';
 
 export type Product = {
   id: string;
@@ -30,5 +31,3 @@ export type Product = {
   price: number;
   category: Category;
 };
-
-    
