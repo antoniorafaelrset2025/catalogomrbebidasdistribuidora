@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { notFound } from 'next/navigation';
 import { useDoc, useFirestore, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -14,12 +14,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useMemoFirebase } from '@/firebase/provider';
 
 type ProductPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export default function ProductPage({ params }: ProductPageProps) {
+export default function ProductPage({ params: paramsPromise }: ProductPageProps) {
+  const params = use(paramsPromise);
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
