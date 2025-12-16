@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { doc, setDoc, Firestore } from 'firebase/firestore';
+import { doc, setDoc, getDoc, Firestore } from 'firebase/firestore';
 import { useFirestore, useDoc } from '@/firebase';
 import type { SiteInfo } from '@/lib/types';
 import { useMemoFirebase } from '@/firebase/provider';
@@ -22,26 +22,29 @@ const defaultSiteInfo: SiteInfo = {
     heroPhoneDisplay2: '(85) 99412-5603',
 };
 
+let seedingCheckCompleted = false;
 
-let isSeeding = false;
-let seedingCompleted = false;
+async function seedSiteInfoIfEmpty(firestore: Firestore) {
+  if (seedingCheckCompleted) return;
 
-async function seedSiteInfo(firestore: Firestore) {
-  if (isSeeding || seedingCompleted) return;
-
-  isSeeding = true;
   const siteInfoRef = doc(firestore, 'siteInfo', SITE_INFO_DOC_ID);
   
   try {
-    // We use set with merge true to create the doc if it doesn't exist,
-    // or update it with default values for any missing fields.
-    await setDoc(siteInfoRef, defaultSiteInfo, { merge: true });
-    console.log('Site info seeded/checked successfully!');
-    seedingCompleted = true;
+    const docSnap = await getDoc(siteInfoRef);
+    if (!docSnap.exists()) {
+        console.log('Site info document does not exist. Seeding with default data...');
+        await setDoc(siteInfoRef, defaultSiteInfo);
+        console.log('Site info seeded successfully!');
+    } else {
+        // If the document exists, we can still merge to add new fields from defaultSiteInfo
+        // that might not be in the database yet from previous versions.
+        await setDoc(siteInfoRef, defaultSiteInfo, { merge: true });
+        console.log('Site info document exists. Ensured all fields are present.');
+    }
+    seedingCheckCompleted = true;
   } catch (error) {
-    console.warn("Could not seed site info (this is expected on first load without auth):", error);
-  } finally {
-    isSeeding = false;
+    console.warn("Could not check or seed site info (this is expected on first load without auth):", error);
+    seedingCheckCompleted = true; // Mark as checked to prevent retries
   }
 }
 
@@ -50,8 +53,8 @@ export function useSiteInfo() {
   const [initialLoading, setInitialLoading] = useState(true);
   
   useEffect(() => {
-    if (firestore && !seedingCompleted) {
-      seedSiteInfo(firestore);
+    if (firestore && !seedingCheckCompleted) {
+      seedSiteInfoIfEmpty(firestore);
     }
   }, [firestore]);
 

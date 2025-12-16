@@ -8,32 +8,35 @@ import { products as staticProducts } from '@/lib/products';
 import type { Product } from '@/lib/types';
 import { useMemoFirebase } from '@/firebase/provider';
 
-let isSeeding = false;
-let seedingCompleted = false;
+let seedingCheckCompleted = false;
 
-async function seedDatabase(firestore: Firestore) {
-  if (isSeeding) return;
+async function seedDatabaseIfEmpty(firestore: Firestore) {
+  if (seedingCheckCompleted) return;
 
-  isSeeding = true;
   const productsCollectionRef = collection(firestore, 'products');
   
   try {
-    const batch = writeBatch(firestore);
-    staticProducts.forEach((product) => {
-      const docRef = doc(productsCollectionRef, product.id);
-      batch.set(docRef, product);
-    });
-    
-    await batch.commit();
-    console.log('Database re-seeded successfully with latest products!');
-    seedingCompleted = true;
+    const snapshot = await getDocs(productsCollectionRef);
+    if (snapshot.empty) {
+        console.log('Products collection is empty. Seeding database...');
+        const batch = writeBatch(firestore);
+        staticProducts.forEach((product) => {
+            const docRef = doc(productsCollectionRef, product.id);
+            batch.set(docRef, product);
+        });
+        
+        await batch.commit();
+        console.log('Database seeded successfully with initial products!');
+    } else {
+        console.log('Products collection already has data. Skipping seed.');
+    }
+    seedingCheckCompleted = true;
 
   } catch (error) {
     // This might fail due to permissions, which is okay for non-authed users.
     // The static list will be used as a fallback.
-    console.warn("Could not seed database (this is expected on first load without auth):", error);
-  } finally {
-    isSeeding = false;
+    console.warn("Could not check or seed database (this is expected on first load without auth):", error);
+    seedingCheckCompleted = true; // Mark as checked even if it fails to prevent retries
   }
 }
 
@@ -42,10 +45,8 @@ export function useProducts() {
   const [initialLoading, setInitialLoading] = useState(true);
   
   useEffect(() => {
-    // We now attempt to seed every time the component mounts if not completed.
-    // This will overwrite existing data with the latest from products.ts
-    if (firestore && !seedingCompleted) {
-      seedDatabase(firestore);
+    if (firestore && !seedingCheckCompleted) {
+      seedDatabaseIfEmpty(firestore);
     }
   }, [firestore]);
 
