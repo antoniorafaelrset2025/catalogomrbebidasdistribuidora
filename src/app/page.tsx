@@ -244,7 +244,7 @@ export default function Home() {
           {isSiteInfoLoading ? <Skeleton className="h-16 w-1/2 mx-auto" /> : renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}
           {isSiteInfoLoading ? <Skeleton className="h-14 w-3/4 mx-auto mt-2" /> : renderEditableField('heroTitle2', siteInfo.heroTitle2, 'text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground')}
           
-          <div className="mt-4 flex flex-col items-center justify-center gap-2">
+          <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 flex-wrap">
             <div className="flex items-center justify-center gap-4">
               <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-muted-foreground" />
