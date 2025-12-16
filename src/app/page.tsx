@@ -378,7 +378,7 @@ export default function Home() {
           </div>
 
           <div className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-             {isSiteInfoLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : <p>{siteInfo.heroSlogan}</p>}
+             {isSiteInfoLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : <div className="p-1">{siteInfo.heroSlogan}</div>}
           </div>
         </div>
       </div>
@@ -475,23 +475,24 @@ export default function Home() {
                                 : 'Consulte'}
                             </p>
                             {user && (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-9 w-9">
-                                    <MoreVertical className="w-4 h-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onSelect={() => handleStartEditingProduct(product)}>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    <span>Editar</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onSelect={() => setProductToDelete(product)} className="text-red-600">
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    <span>Excluir</span>
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
+                              <>
+                                <Button onClick={() => handleStartEditingProduct(product)} variant="ghost" size="icon" className="h-9 w-9">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-9 w-9">
+                                      <MoreVertical className="w-4 h-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onSelect={() => setProductToDelete(product)} className="text-red-600">
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      <span>Excluir</span>
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </>
                             )}
                           </>
                         )}
