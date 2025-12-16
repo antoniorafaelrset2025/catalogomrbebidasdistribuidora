@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { LogIn, LogOut, User as UserIcon, KeyRound } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, KeyRound, Edit, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import {
   DropdownMenu,
@@ -19,6 +19,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useSiteInfo } from '@/lib/use-site-info';
 import { Skeleton } from './ui/skeleton';
+import { Input } from './ui/input';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 function getInitials(name?: string | null) {
   if (!name) return '';
@@ -31,19 +34,55 @@ function getInitials(name?: string | null) {
 export default function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
-  const { siteInfo, isLoading: isSiteInfoLoading } = useSiteInfo();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef } = useSiteInfo();
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  
+  const [isEditingSiteName, setIsEditingSiteName] = useState(false);
+  const [newSiteName, setNewSiteName] = useState('');
 
   const handleLogout = async () => {
     await signOut(auth);
   };
+  
+  const handleUpdateSiteName = async () => {
+    if (firestore && siteInfoRef) {
+      const data = { siteName: newSiteName };
+      updateDoc(siteInfoRef, data)
+        .then(() => {
+          toast({
+            title: 'Sucesso!',
+            description: 'O nome do site foi atualizado.',
+          });
+          setIsEditingSiteName(false);
+        })
+        .catch(() => {
+          const permissionError = new FirestorePermissionError({
+            path: siteInfoRef.path,
+            operation: 'update',
+            requestResourceData: data,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        });
+    }
+  };
+  
+  const handleStartEditingSiteName = (currentName: string) => {
+    setIsEditingSiteName(true);
+    setNewSiteName(currentName);
+  };
+  
+  const handleCancelEditing = () => {
+    setIsEditingSiteName(false);
+    setNewSiteName('');
+  }
 
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center">
-          <Link href="/" className="mr-auto">
-            <div className="flex items-center gap-2">
+          <Link href="/" className="mr-auto flex items-center gap-2 group">
               <Image
                 src="/logo.png"
                 alt="MR Bebidas Logo"
@@ -53,10 +92,29 @@ export default function Header() {
               />
               {isSiteInfoLoading ? (
                  <Skeleton className="h-6 w-24" />
+              ) : isEditingSiteName && user ? (
+                <div className="flex items-center gap-2">
+                   <Input
+                     type="text"
+                     value={newSiteName}
+                     onChange={(e) => setNewSiteName(e.target.value)}
+                     className="h-9"
+                   />
+                   <Button onClick={handleUpdateSiteName} size="icon" className="h-9 w-9"><Save className="w-5 h-5"/></Button>
+                   <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
+                     <X className="w-5 h-5" />
+                   </Button>
+                </div>
               ) : (
-                <span className="text-lg font-bold">{siteInfo.siteName}</span>
+                <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold">{siteInfo.siteName}</span>
+                    {user && (
+                      <Button onClick={() => handleStartEditingSiteName(siteInfo.siteName)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100">
+                          <Edit className="w-4 h-4"/>
+                      </Button>
+                    )}
+                </div>
               )}
-            </div>
           </Link>
           <div className="flex items-center gap-2 ml-auto">
             {isUserLoading ? (
