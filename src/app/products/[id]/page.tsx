@@ -14,13 +14,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useMemoFirebase } from '@/firebase/provider';
 
 type ProductPageProps = {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 };
 
-export default function ProductPage({ params: paramsPromise }: ProductPageProps) {
-  const params = use(paramsPromise);
+export default function ProductPage({ params }: ProductPageProps) {
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
@@ -151,17 +150,3 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
     </div>
   );
 }
-
-// This function is commented out because we are fetching data dynamically.
-// You can uncomment it if you want to pre-render these pages at build time.
-//
-// import { collection, getDocs } from 'firebase/firestore';
-// import { initializeFirebase } from '@/firebase';
-
-// export async function generateStaticParams() {
-//   const { firestore } = initializeFirebase();
-//   const productsCollection = collection(firestore, 'products');
-//   const productSnapshot = await getDocs(productsCollection);
-//   const products = productSnapshot.docs.map(doc => ({ id: doc.id }));
-//   return products;
-// }
