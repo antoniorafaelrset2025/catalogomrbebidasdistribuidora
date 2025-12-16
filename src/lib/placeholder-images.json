@@ -1,3 +1,94 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "ergonomic-chair-1",
+      "description": "Front view of a modern ergonomic office chair.",
+      "imageUrl": "https://images.unsplash.com/photo-1541558869434-2840d308329a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxvZmZpY2UlMjBjaGFpcnxlbnwwfHx8fDE3NjU3ODMwMzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "office chair"
+    },
+    {
+      "id": "ergonomic-chair-2",
+      "description": "Side view of the ergonomic chair highlighting lumbar support.",
+      "imageUrl": "https://images.unsplash.com/photo-1697820538478-a8f993c715e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjaGFpciUyMHNpZGV8ZW58MHx8fHwxNzY1ODk3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chair side"
+    },
+    {
+      "id": "ergonomic-chair-3",
+      "description": "Close-up of the armrest and seat material of the chair.",
+      "imageUrl": "https://images.unsplash.com/photo-1632599640581-3311d8fa54e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjaGFpciUyMGRldGFpbHxlbnwwfHx8fDE3NjU4OTc0NTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chair detail"
+    },
+    {
+      "id": "wireless-mouse-1",
+      "description": "Top-down view of a sleek wireless mouse.",
+      "imageUrl": "https://images.unsplash.com/photo-1631749352020-b8ce2d86727e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3aXJlbGVzcyUyMG1vdXNlfGVufDB8fHx8MTc2NTgyODQxNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wireless mouse"
+    },
+    {
+      "id": "wireless-mouse-2",
+      "description": "Wireless mouse shown from an angle.",
+      "imageUrl": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb21wdXRlciUyMG1vdXNlfGVufDB8fHx8MTc2NTg0OTQ3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "computer mouse"
+    },
+    {
+      "id": "mech-keyboard-1",
+      "description": "Full view of a mechanical keyboard with RGB lighting.",
+      "imageUrl": "https://images.unsplash.com/photo-1626958390898-162d3577f293?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtZWNoYW5pY2FsJTIwa2V5Ym9hcmR8ZW58MHx8fHwxNzY1ODQ2OTQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mechanical keyboard"
+    },
+    {
+      "id": "mech-keyboard-2",
+      "description": "Close-up of the mechanical key switches.",
+      "imageUrl": "https://images.unsplash.com/photo-1692663251793-7d1fc65a09fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxrZXlib2FyZCUyMGtleXN8ZW58MHx8fHwxNzY1ODk3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "keyboard keys"
+    },
+    {
+      "id": "4k-monitor-1",
+      "description": "A 4K monitor displaying a vibrant landscape.",
+      "imageUrl": "https://images.unsplash.com/photo-1547194936-28214bd75193?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHw0ayUyMG1vbml0b3J8ZW58MHx8fHwxNzY1ODI5NzM0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "4k monitor"
+    },
+    {
+      "id": "4k-monitor-2",
+      "description": "Back view of the 4K monitor showing its ports.",
+      "imageUrl": "https://images.unsplash.com/photo-1751136241259-0224436ea792?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtb25pdG9yJTIwYmFja3xlbnwwfHx8fDE3NjU4OTc0NTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "monitor back"
+    },
+    {
+      "id": "laptop-stand-1",
+      "description": "An aluminum laptop stand on a clean desk.",
+      "imageUrl": "https://images.unsplash.com/photo-1641057350241-c05da7c70a9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bGFwdG9wJTIwc3RhbmR8ZW58MHx8fHwxNzY1ODk3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop stand"
+    },
+    {
+      "id": "desk-lamp-1",
+      "description": "A minimalist LED desk lamp.",
+      "imageUrl": "https://images.unsplash.com/photo-1579326882518-21eaa7893b02?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkZXNrJTIwbGFtcHxlbnwwfHx8fDE3NjU4Mjg0MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "desk lamp"
+    },
+    {
+      "id": "desk-lamp-2",
+      "description": "The desk lamp illuminating a book.",
+      "imageUrl": "https://images.unsplash.com/photo-1688912742128-52882c1d75b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxsYW1wJTIwbGlnaHR8ZW58MHx8fHwxNzY1ODk3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "lamp light"
+    },
+    {
+      "id": "standing-desk-1",
+      "description": "A modern electric standing desk at sitting height.",
+      "imageUrl": "https://images.unsplash.com/photo-1622128090613-bec0e39b7e6d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzdGFuZGluZyUyMGRlc2t8ZW58MHx8fHwxNzY1ODk3NDU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "standing desk"
+    },
+    {
+      "id": "standing-desk-2",
+      "description": "The standing desk raised to standing height.",
+      "imageUrl": "https://images.unsplash.com/photo-1622579522112-3b69c47d6427?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhZGp1c3RhYmxlJTIwZGVza3xlbnwwfHx8fDE3NjU4OTc0NTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "adjustable desk"
+    },
+    {
+      "id": "usb-c-hub-1",
+      "description": "A multi-port USB-C hub with various connected cables.",
+      "imageUrl": "https://images.unsplash.com/photo-1760348213270-7cd00b8c3405?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx1c2IlMjBodWJ8ZW58MHx8fHwxNzY1ODQ5NDc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "usb hub"
+    }
+  ]
 }
