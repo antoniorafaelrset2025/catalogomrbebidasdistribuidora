@@ -216,14 +216,14 @@ export default function Home() {
     const isEditing = editingField === field && user;
 
     return (
-      <div className={`group relative w-full ${isEditing ? 'flex items-center gap-2' : ''} ${isCentered ? 'justify-center' : ''}`}>
+      <div className={`group relative w-full flex items-center gap-2 ${isCentered ? 'justify-center' : ''}`}>
         {isEditing ? (
           <>
             <Input
               type="text"
               value={fieldValue}
               onChange={(e) => setFieldValue(e.target.value)}
-              className={`${className} h-auto p-0 border-dashed text-center`}
+              className={`${className} h-auto p-0 border-dashed`}
             />
             <Button onClick={handleUpdateSiteInfo} size="icon" className="h-9 w-9 shrink-0"><Save className="w-5 h-5"/></Button>
             <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9 shrink-0">
@@ -289,7 +289,7 @@ export default function Home() {
                         {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
+                                <p className="text-base sm:text-lg font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
                                 {user && <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
                         )}
@@ -299,7 +299,7 @@ export default function Home() {
                         {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
+                                <p className="text-base sm:text-lg font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
                                 {user && <Button onClick={() => handleStartEditingField('heroLocation2', siteInfo.heroLocation2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
                         )}
@@ -314,7 +314,7 @@ export default function Home() {
                             <div className="flex items-center gap-1.5">
                               <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                                 <WhatsappIcon />
-                                <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
+                                <p className="text-base sm:text-lg font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
                               </a>
                               {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
@@ -326,7 +326,7 @@ export default function Home() {
                             <div className="flex items-center gap-1.5">
                               <a href={`https://wa.me/${siteInfo.heroPhone2}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                                 <WhatsappIcon />
-                                <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
+                                <p className="text-base sm:text-lg font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
                               </a>
                               {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay2', siteInfo.heroPhoneDisplay2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
@@ -408,10 +408,10 @@ export default function Home() {
                              type="text"
                              value={newName}
                              onChange={(e) => setNewName(e.target.value)}
-                             className="text-lg font-semibold leading-none tracking-tight h-auto"
+                             className="text-md font-semibold leading-none tracking-tight h-auto"
                            />
                         ) : (
-                          <CardTitle className="text-lg font-semibold">{product.name}</CardTitle>
+                          <CardTitle className="text-md font-semibold">{product.name}</CardTitle>
                         )}
                       </div>
                       <div className="text-right flex items-center gap-2">
