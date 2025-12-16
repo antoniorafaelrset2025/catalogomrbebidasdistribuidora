@@ -76,7 +76,8 @@ export default function Home() {
   
   // One-time fix for swapped phone numbers in Firestore
   useEffect(() => {
-    if (siteInfoRef && siteInfo.heroPhone === '5585992234683') {
+    // Only run this check if we are logged in and have the necessary info.
+    if (user && siteInfoRef && siteInfo.heroPhone === '5585992234683') {
       console.log('Swapped phone numbers detected in Firestore. Applying fix...');
       const updatedData = {
         heroPhone: '5585994125603',
@@ -98,7 +99,7 @@ export default function Home() {
           errorEmitter.emit('permission-error', permissionError);
         });
     }
-  }, [siteInfo, siteInfoRef, refreshSiteInfo]);
+  }, [siteInfo, siteInfoRef, refreshSiteInfo, user]);
 
   const filteredProducts = useMemo(() => {
     if (!products) return [];
@@ -280,60 +281,60 @@ export default function Home() {
           </div>
 
           <div className="mt-4 mx-auto max-w-md px-4">
-              <div className="grid grid-cols-2 gap-x-4">
-                  {/* Coluna Esquerda - Cidades */}
-                  <div className="space-y-1 justify-self-start">
-                      {/* Fortaleza */}
-                      <div className="flex items-center gap-2 group">
-                          {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
-                              <div className="flex items-center gap-1">
-                                  <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                  <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
-                                  {user && <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
-                              </div>
-                          )}
-                      </div>
-                      {/* Cumbuco */}
-                      <div className="flex items-center gap-2 group">
-                          {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
-                              <div className="flex items-center gap-1">
-                                  <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                  <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
-                                  {user && <Button onClick={() => handleStartEditingField('heroLocation2', siteInfo.heroLocation2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
-                              </div>
-                          )}
-                      </div>
-                  </div>
+            <div className="grid grid-cols-[1fr,auto] gap-x-4 items-center">
+                {/* Coluna Esquerda - Cidades */}
+                <div className="space-y-2 justify-self-start text-left">
+                    {/* Fortaleza */}
+                    <div className="flex items-center gap-2 group">
+                        {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
+                            <div className="flex items-center gap-1.5">
+                                <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
+                                {user && <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
+                            </div>
+                        )}
+                    </div>
+                    {/* Cumbuco */}
+                    <div className="flex items-center gap-2 group">
+                        {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
+                            <div className="flex items-center gap-1.5">
+                                <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
+                                {user && <Button onClick={() => handleStartEditingField('heroLocation2', siteInfo.heroLocation2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
+                            </div>
+                        )}
+                    </div>
+                </div>
 
-                  {/* Coluna Direita - Telefones */}
-                  <div className="space-y-1 justify-self-end">
-                       {/* Telefone Fortaleza */}
-                      <div className="flex items-center gap-2 group">
-                          {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
-                              <div className="flex items-center gap-1">
-                                <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
-                                  <WhatsappIcon />
-                                  <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
-                                </a>
-                                {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
-                              </div>
-                          )}
-                      </div>
-                      {/* Telefone Cumbuco */}
-                      <div className="flex items-center gap-2 group">
-                          {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
-                              <div className="flex items-center gap-1">
-                                <a href={`https://wa.me/${siteInfo.heroPhone2}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
-                                  <WhatsappIcon />
-                                  <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
-                                </a>
-                                {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay2', siteInfo.heroPhoneDisplay2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
-                              </div>
-                          )}
-                      </div>
-                  </div>
-              </div>
-          </div>
+                {/* Coluna Direita - Telefones */}
+                <div className="space-y-2 justify-self-end text-right">
+                     {/* Telefone Fortaleza */}
+                    <div className="flex items-center gap-2 group">
+                        {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
+                            <div className="flex items-center gap-1.5">
+                              <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
+                                <WhatsappIcon />
+                                <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
+                              </a>
+                              {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
+                            </div>
+                        )}
+                    </div>
+                    {/* Telefone Cumbuco */}
+                    <div className="flex items-center gap-2 group">
+                        {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
+                            <div className="flex items-center gap-1.5">
+                              <a href={`https://wa.me/${siteInfo.heroPhone2}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
+                                <WhatsappIcon />
+                                <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
+                              </a>
+                              {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay2', siteInfo.heroPhoneDisplay2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
           <div className="mt-6 max-w-2xl mx-auto">
@@ -407,10 +408,10 @@ export default function Home() {
                              type="text"
                              value={newName}
                              onChange={(e) => setNewName(e.target.value)}
-                             className="text-base font-semibold leading-none tracking-tight h-auto"
+                             className="text-lg font-semibold leading-none tracking-tight h-auto"
                            />
                         ) : (
-                          <CardTitle className="text-sm">{product.name}</CardTitle>
+                          <CardTitle className="text-lg font-semibold">{product.name}</CardTitle>
                         )}
                       </div>
                       <div className="text-right flex items-center gap-2">
