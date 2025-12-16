@@ -37,7 +37,7 @@ export default function LoginPage() {
         description: 'Você foi autenticado.',
       });
     } catch (error: any) {
-      // If user not found, try to create a new account
+      // If user not found or credential is generally invalid, try to create a new account
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         try {
           await createUserWithEmailAndPassword(auth, email, password);
@@ -59,6 +59,8 @@ export default function LoginPage() {
         let description = 'Ocorreu um erro desconhecido.';
         if (error.code === 'auth/wrong-password') {
           description = 'Senha incorreta. Verifique seus dados.';
+        } else if (error.code === 'auth/invalid-email') {
+            description = 'O e-mail fornecido não é válido.';
         }
         toast({
           variant: 'destructive',
