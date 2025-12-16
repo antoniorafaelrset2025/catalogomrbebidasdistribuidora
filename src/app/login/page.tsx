@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
@@ -16,12 +16,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -53,7 +55,28 @@ export default function LoginPage() {
       // If user not found or credential is generally invalid, try to create a new account
       if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         try {
-          await createUserWithEmailAndPassword(auth, email, password);
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+
+          // Create a user document in Firestore
+          if (firestore && user) {
+            const userDocRef = doc(firestore, 'users', user.uid);
+            const newUserDoc = {
+                id: user.uid,
+                username: username,
+            };
+            
+            setDoc(userDocRef, newUserDoc).catch(() => {
+                // IMPORTANT: Do NOT send sensitive data like passwords here.
+                const permissionError = new FirestorePermissionError({
+                    path: userDocRef.path,
+                    operation: 'create',
+                    requestResourceData: { id: user.uid, username: username }, // Only safe data
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
+          }
+
           router.push('/');
           toast({
             title: 'Cadastro realizado com sucesso!',
