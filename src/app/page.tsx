@@ -55,7 +55,7 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-16">
-        <div className="bg-card p-4 rounded-lg border shadow-lg sticky top-20 z-40">
+        <div className="bg-card p-4 rounded-lg border shadow-lg">
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-grow">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
