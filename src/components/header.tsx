@@ -107,7 +107,7 @@ export default function Header() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold">{siteInfo.siteName}</span>
+                    <span className="text-lg font-bold uppercase">{siteInfo.siteName}</span>
                     {user && (
                       <Button onClick={() => handleStartEditingSiteName(siteInfo.siteName)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100">
                           <Edit className="w-4 h-4"/>
