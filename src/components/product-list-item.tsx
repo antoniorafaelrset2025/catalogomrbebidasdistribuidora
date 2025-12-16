@@ -2,7 +2,6 @@ import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -15,10 +14,10 @@ type ProductListItemProps = {
 
 export default function ProductListItem({ product }: ProductListItemProps) {
   return (
-    <Card className="transition-all duration-300 border hover:shadow-lg hover:border-accent">
+    <Card className="transition-all duration-300 border hover:shadow-lg hover:border-primary">
       <CardHeader>
-        <div className="flex justify-between items-start gap-4">
-          <div>
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex-1">
             <CardTitle>
               <Link
                 href={`/products/${product.id}`}
@@ -27,16 +26,13 @@ export default function ProductListItem({ product }: ProductListItemProps) {
                 {product.name}
               </Link>
             </CardTitle>
-            <CardDescription className="mt-2 line-clamp-2">
-              {product.description}
-            </CardDescription>
           </div>
-          <div className="text-right">
+          <div className="text-right flex items-center gap-4">
             <p className="text-xl font-bold whitespace-nowrap">
               ${product.price.toFixed(2)}
             </p>
-            <Button variant="secondary" size="sm" asChild className="mt-2">
-              <Link href={`/products/${product.id}`}>View Details</Link>
+            <Button variant="secondary" size="sm" asChild>
+              <Link href={`/products/${product.id}`}>Ver Detalhes</Link>
             </Button>
           </div>
         </div>
