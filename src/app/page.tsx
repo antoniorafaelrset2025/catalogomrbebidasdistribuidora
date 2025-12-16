@@ -410,14 +410,7 @@ export default function Home() {
                               />
                            </div>
                         ) : (
-                          <CardTitle>
-                            <Link
-                              href={`/products/${product.id}`}
-                              className="hover:underline"
-                            >
-                              {product.name}
-                            </Link>
-                          </CardTitle>
+                          <CardTitle>{product.name}</CardTitle>
                         )}
                       </div>
                       <div className="text-right flex items-center gap-2">
