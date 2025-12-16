@@ -136,12 +136,12 @@ export default function Home() {
   const renderEditableField = (field: EditableField, value: string, className: string) => {
     if (editingField === field && user) {
       return (
-         <div className="flex items-center gap-2">
+         <div className="flex justify-center items-center gap-2">
             <Input
               type="text"
               value={fieldValue}
               onChange={(e) => setFieldValue(e.target.value)}
-              className={`${className} h-auto p-0 border-dashed`}
+              className={`${className} h-auto p-0 border-dashed text-center`}
             />
             <Button onClick={handleUpdateSiteInfo} size="icon" className="h-9 w-9"><Save className="w-5 h-5"/></Button>
             <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
@@ -152,7 +152,7 @@ export default function Home() {
     }
     
     return (
-      <div className="flex items-center gap-2 group">
+      <div className="flex justify-center items-center gap-2 group">
         <span className={className}>{value}</span>
         {user && (
           <Button onClick={() => handleStartEditingField(field, value)} variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100">
