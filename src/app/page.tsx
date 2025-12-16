@@ -104,15 +104,15 @@ export default function Home() {
 
   return (
     <>
-      <div className="relative text-center pt-8 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-background/80 via-background/90">
+      <div className="relative text-center pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-background/80 via-background/90">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative">
           <div className="flex justify-center items-center mb-4">
             <Image
               src="/logo.png"
               alt="MR Bebidas Distribuidora Logo"
-              width={128}
-              height={128}
+              width={160}
+              height={160}
               className="rounded-full"
             />
           </div>
