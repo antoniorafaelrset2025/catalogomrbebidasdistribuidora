@@ -18,8 +18,8 @@ const defaultSiteInfo: SiteInfo = {
     heroPhone: '5585992234683',
     heroPhoneDisplay: '(85) 99223-4683',
     heroLocation2: 'CUMBUCO',
-    heroPhone2: '5585999999999',
-    heroPhoneDisplay2: '(85) 99999-9999',
+    heroPhone2: '5585992234683',
+    heroPhoneDisplay2: '(85) 99223-4683',
 };
 
 
