@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { notFound } from 'next/navigation';
-import { useDoc, useFirestore, useUser } from '@/firebase';
+import { useDoc, useFirestore, useUser, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, Edit, Save } from 'lucide-react';
+import { ShoppingCart, Edit, Save, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Product } from '@/lib/types';
 import { Input } from '@/components/ui/input';
@@ -64,21 +64,23 @@ export default function ProductPage({ params }: ProductPageProps) {
       return;
     }
     if (productRef) {
-      try {
-        await updateDoc(productRef, { price: newPrice });
-        toast({
-          title: 'Sucesso!',
-          description: 'O preço foi atualizado.',
+      const updatedData = { price: newPrice };
+      updateDoc(productRef, updatedData)
+        .then(() => {
+          toast({
+            title: 'Sucesso!',
+            description: 'O preço foi atualizado.',
+          });
+          setIsEditing(false);
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+              path: productRef.path,
+              operation: 'update',
+              requestResourceData: updatedData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
         });
-        setIsEditing(false);
-      } catch (error) {
-        console.error("Error updating price: ", error);
-        toast({
-            variant: 'destructive',
-            title: 'Erro ao atualizar',
-            description: 'Você não tem permissão para editar o preço.',
-        });
-      }
     }
   };
 
