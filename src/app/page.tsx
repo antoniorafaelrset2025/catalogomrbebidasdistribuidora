@@ -343,7 +343,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-16 relative z-10">
         <div className="bg-card p-4 rounded-lg border shadow-lg">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-grow">
