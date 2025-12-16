@@ -5,7 +5,7 @@ import type { Product, Category, SiteInfo } from '@/lib/types';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Edit, Save, X, Phone } from 'lucide-react';
+import { Search, MapPin, Edit, Save, X, Phone, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useProducts } from '@/lib/use-products';
 import { useSiteInfo } from '@/lib/use-site-info';
@@ -14,6 +14,7 @@ import { useUser, useFirestore, errorEmitter, FirestorePermissionError } from '@
 import { useToast } from '@/hooks/use-toast';
 import { doc, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
+import { AddProductDialog } from '@/components/add-product-dialog';
 
 type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation' | 'heroPhoneDisplay' | 'heroLocation2' | 'heroPhoneDisplay2';
 
@@ -31,6 +32,7 @@ export default function Home() {
   
   const [editingField, setEditingField] = useState<EditableField | null>(null);
   const [fieldValue, setFieldValue] = useState('');
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
 
   const isLoading = areProductsLoading || isSiteInfoLoading;
 
@@ -355,6 +357,12 @@ export default function Home() {
                 className="pl-10 bg-background"
               />
             </div>
+             {user && (
+              <Button onClick={() => setIsAddProductOpen(true)}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Adicionar Produto
+              </Button>
+            )}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             {categories.map((category) => (
@@ -451,8 +459,13 @@ export default function Home() {
           )}
         </div>
       </div>
+      {user && (
+        <AddProductDialog
+            isOpen={isAddProductOpen}
+            onOpenChange={setIsAddProductOpen}
+            categories={categories.filter((c) => c !== 'Todos') as Category[]}
+        />
+      )}
     </>
   );
 }
-
-    

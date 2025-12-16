@@ -14,6 +14,7 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
   if (seedingCheckCompleted) return;
 
   const productsCollectionRef = collection(firestore, 'products');
+  seedingCheckCompleted = true; // Set immediately to prevent multiple runs
   
   try {
     const snapshot = await getDocs(productsCollectionRef);
@@ -21,8 +22,13 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
         console.log('Products collection is empty. Seeding database...');
         const batch = writeBatch(firestore);
         staticProducts.forEach((product) => {
+            const docData = {
+                ...product,
+                // Ensure there's a description, even if it's empty
+                description: product.description || '' 
+            };
             const docRef = doc(productsCollectionRef, product.id);
-            batch.set(docRef, product);
+            batch.set(docRef, docData);
         });
         
         await batch.commit();
@@ -30,23 +36,25 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
     } else {
         console.log('Products collection already has data. Skipping seed.');
     }
-    seedingCheckCompleted = true;
 
   } catch (error) {
     // This might fail due to permissions, which is okay for non-authed users.
     // The static list will be used as a fallback.
     console.warn("Could not check or seed database (this is expected on first load without auth):", error);
-    seedingCheckCompleted = true; // Mark as checked even if it fails to prevent retries
   }
 }
 
 export function useProducts() {
   const firestore = useFirestore();
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [isSeeding, setIsSeeding] = useState(true);
   
   useEffect(() => {
     if (firestore && !seedingCheckCompleted) {
-      seedDatabaseIfEmpty(firestore);
+      seedDatabaseIfEmpty(firestore).finally(() => {
+        setIsSeeding(false);
+      });
+    } else {
+      setIsSeeding(false);
     }
   }, [firestore]);
 
@@ -58,15 +66,11 @@ export function useProducts() {
 
   const { data: firestoreProducts, isLoading: isFirestoreLoading, error } = useCollection<Product>(productsQuery);
 
-  useEffect(() => {
-    if(!isFirestoreLoading) {
-      setInitialLoading(false);
-    }
-  }, [isFirestoreLoading]);
+  const isLoading = isSeeding || (firestoreProducts === null && isFirestoreLoading);
 
   // Use firestore products if available, otherwise fallback to static products.
-  const products = firestoreProducts && firestoreProducts.length > 0 ? firestoreProducts : staticProducts;
-  const isLoading = initialLoading && isFirestoreLoading;
-
+  // This fallback is mostly for the brief moment before the first Firestore fetch.
+  const products = firestoreProducts ?? staticProducts;
+  
   return { products, isLoading, error };
 }

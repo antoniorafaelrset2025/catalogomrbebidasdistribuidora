@@ -1,0 +1,185 @@
+'use client';
+
+import { useState } from 'react';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import type { Category, NewProduct } from '@/lib/types';
+
+const formSchema = z.object({
+  name: z.string().min(1, 'Nome do produto é obrigatório.'),
+  price: z.coerce.number().min(0, 'O preço não pode ser negativo.'),
+  category: z.string().min(1, 'Selecione uma categoria.'),
+});
+
+type AddProductDialogProps = {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  categories: Category[];
+};
+
+export function AddProductDialog({
+  isOpen,
+  onOpenChange,
+  categories,
+}: AddProductDialogProps) {
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      price: 0,
+      category: '',
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!firestore) return;
+
+    setIsSubmitting(true);
+    try {
+      const newProduct: NewProduct = {
+        name: values.name,
+        price: values.price,
+        category: values.category as Category,
+        description: '', // Default empty description
+      };
+
+      const productsCollectionRef = collection(firestore, 'products');
+      
+      addDoc(productsCollectionRef, newProduct)
+        .then(() => {
+            toast({
+                title: 'Sucesso!',
+                description: 'Novo produto adicionado ao catálogo.',
+            });
+            form.reset();
+            onOpenChange(false);
+        }).catch((e) => {
+            const permissionError = new FirestorePermissionError({
+                path: productsCollectionRef.path,
+                operation: 'create',
+                requestResourceData: newProduct,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao adicionar produto',
+        description: error.message || 'Ocorreu um erro desconhecido.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleOpenChange = (open: boolean) => {
+    if (!isSubmitting) {
+        form.reset();
+        onOpenChange(open);
+    }
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Adicionar Novo Produto</DialogTitle>
+          <DialogDescription>
+            Preencha os detalhes do novo produto para adicioná-lo ao catálogo.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome do Produto</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={isSubmitting} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Preço (R$)</FormLabel>
+                  <FormControl>
+                    <Input type="number" step="0.01" {...field} disabled={isSubmitting} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecione uma categoria" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {categories.map((category) => (
+                                <SelectItem key={category} value={category}>{category}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Adicionando...' : 'Adicionar Produto'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

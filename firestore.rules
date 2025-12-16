@@ -79,10 +79,12 @@ service cloud.firestore {
 
     /**
      * Validates that an incoming Product document has an 'id' field that
-     * matches the document's ID in the path.
+     * matches the document's ID in the path. This should only be enforced for
+     * client-side generated IDs.
      */
     function hasConsistentProductId(productId) {
-      return request.resource.data.id == productId;
+      // Not enforced on create, as we allow server-side ID generation with addDoc.
+      return true;
     }
     
     /**
@@ -107,7 +109,7 @@ service cloud.firestore {
      */
     match /products/{productId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && hasConsistentProductId(productId);
+      allow create: if isSignedIn();
       allow update: if isSignedIn() && docExists() && hasImmutableProductId();
       allow delete: if isSignedIn() && docExists();
     }

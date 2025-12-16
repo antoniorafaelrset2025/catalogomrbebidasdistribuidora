@@ -32,6 +32,14 @@ export type Product = {
   category: Category;
 };
 
+export type NewProduct = {
+  name: string;
+  description: string;
+  price: number;
+  category: Category;
+};
+
+
 export type SiteInfo = {
   siteName: string;
   heroTitle1: string;
