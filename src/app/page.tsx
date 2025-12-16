@@ -32,6 +32,7 @@ export default function Home() {
     'Fumos',
     'Seda',
     'Isqueiros',
+    'BEBIDAS',
     'LONG NECKS',
     'CERVEJAS LATAS',
     'CACHAÇAS 1L',
@@ -42,7 +43,6 @@ export default function Home() {
     'DESTILADOS',
     'VINHOS',
     'ENERGÉTICOS',
-    'BEBIDAS',
   ];
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
 
