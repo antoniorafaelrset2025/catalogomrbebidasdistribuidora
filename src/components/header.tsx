@@ -17,6 +17,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChangePasswordDialog } from '@/components/change-password-dialog';
 import { useState } from 'react';
 import Image from 'next/image';
+import { useSiteInfo } from '@/lib/use-site-info';
+import { Skeleton } from './ui/skeleton';
 
 function getInitials(name?: string | null) {
   if (!name) return '';
@@ -29,6 +31,7 @@ function getInitials(name?: string | null) {
 export default function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const { siteInfo, isLoading: isSiteInfoLoading } = useSiteInfo();
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -48,7 +51,11 @@ export default function Header() {
                 height={40}
                 className="rounded-full"
               />
-              <span className="text-lg font-bold">MR Bebidas</span>
+              {isSiteInfoLoading ? (
+                 <Skeleton className="h-6 w-24" />
+              ) : (
+                <span className="text-lg font-bold">{siteInfo.siteName}</span>
+              )}
             </div>
           </Link>
           <div className="flex items-center gap-2 ml-auto">

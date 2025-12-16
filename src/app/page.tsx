@@ -1,23 +1,26 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { Product, Category } from '@/lib/types';
+import type { Product, Category, SiteInfo } from '@/lib/types';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Edit, Save, X } from 'lucide-react';
 import Link from 'next/link';
 import { useProducts } from '@/lib/use-products';
+import { useSiteInfo } from '@/lib/use-site-info';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { doc, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
 
+type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
-  const { products, isLoading } = useProducts();
+  const { products, isLoading: areProductsLoading } = useProducts();
+  const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef } = useSiteInfo();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -25,6 +28,11 @@ export default function Home() {
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [newPrice, setNewPrice] = useState<number | string>('');
   const [newName, setNewName] = useState<string>('');
+  
+  const [editingField, setEditingField] = useState<EditableField | null>(null);
+  const [fieldValue, setFieldValue] = useState('');
+
+  const isLoading = areProductsLoading || isSiteInfoLoading;
 
   const categories: (Category | 'Todos')[] = [
     'Todos',
@@ -61,7 +69,7 @@ export default function Home() {
     });
   }, [products, searchTerm, selectedCategory]);
 
-  const handleUpdate = async (productId: string, data: Partial<Product>) => {
+  const handleUpdateProduct = async (productId: string, data: Partial<Product>) => {
     if (firestore) {
       const productRef = doc(firestore, 'products', productId);
       updateDoc(productRef, data)
@@ -82,19 +90,78 @@ export default function Home() {
         });
     }
   };
+  
+  const handleUpdateSiteInfo = async () => {
+    if (firestore && editingField && siteInfoRef) {
+      const data = { [editingField]: fieldValue };
+      updateDoc(siteInfoRef, data)
+        .then(() => {
+          toast({
+            title: 'Sucesso!',
+            description: 'A informação do site foi atualizada.',
+          });
+          setEditingField(null);
+          setFieldValue('');
+        })
+        .catch(() => {
+          const permissionError = new FirestorePermissionError({
+            path: siteInfoRef.path,
+            operation: 'update',
+            requestResourceData: data,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        });
+    }
+  };
 
-  const handleStartEditing = (product: Product) => {
+  const handleStartEditingProduct = (product: Product) => {
     setEditingProductId(product.id);
     setNewPrice(product.price > 0 ? product.price : '');
     setNewName(product.name);
+  };
+  
+  const handleStartEditingField = (field: EditableField, currentValue: string) => {
+    setEditingField(field);
+    setFieldValue(currentValue);
   };
 
   const handleCancelEditing = () => {
     setEditingProductId(null);
     setNewPrice('');
     setNewName('');
+    setEditingField(null);
+    setFieldValue('');
   };
-
+  
+  const renderEditableField = (field: EditableField, value: string, className: string) => {
+    if (editingField === field && user) {
+      return (
+         <div className="flex items-center gap-2">
+            <Input
+              type="text"
+              value={fieldValue}
+              onChange={(e) => setFieldValue(e.target.value)}
+              className={`${className} h-auto p-0 border-dashed`}
+            />
+            <Button onClick={handleUpdateSiteInfo} size="icon" className="h-9 w-9"><Save className="w-5 h-5"/></Button>
+            <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+      )
+    }
+    
+    return (
+      <div className="flex items-center gap-2 group">
+        <span className={className}>{value}</span>
+        {user && (
+          <Button onClick={() => handleStartEditingField(field, value)} variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100">
+             <Edit className="w-5 h-5"/>
+          </Button>
+        )}
+      </div>
+    )
+  }
 
   return (
     <>
@@ -110,18 +177,24 @@ export default function Home() {
               className="rounded-full"
             />
           </div>
-          <h1 className="text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground">
-            MR BEBIDAS
-          </h1>
-          <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground">
-            DISTRIBUIDORA
-          </h2>
+          {isSiteInfoLoading ? <Skeleton className="h-16 w-1/2 mx-auto" /> : renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}
+          {isSiteInfoLoading ? <Skeleton className="h-14 w-3/4 mx-auto mt-2" /> : renderEditableField('heroTitle2', siteInfo.heroTitle2, 'text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground')}
+          
           <div className="flex items-center justify-center gap-2 mt-4">
             <MapPin className="w-5 h-5 text-muted-foreground" />
-            <p className="text-muted-foreground font-semibold">FORTALEZA</p>
+            {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
+              <div className="group flex items-center">
+                 <p className="text-muted-foreground font-semibold">{siteInfo.heroLocation}</p>
+                 {user && (
+                    <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100">
+                        <Edit className="w-4 h-4"/>
+                    </Button>
+                 )}
+              </div>
+            )}
           </div>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Explore nossa seleção completa de tabacaria e bebidas premium
+             {isSiteInfoLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : siteInfo.heroSlogan}
           </p>
         </div>
       </div>
@@ -208,7 +281,7 @@ export default function Home() {
                       <div className="text-right flex items-center gap-2">
                          {editingProductId === product.id && user ? (
                             <div className="flex items-center gap-2">
-                              <Button onClick={() => handleUpdate(product.id, { name: newName, price: Number(newPrice) })} size="icon" className="h-9 w-9"><Save /></Button>
+                              <Button onClick={() => handleUpdateProduct(product.id, { name: newName, price: Number(newPrice) })} size="icon" className="h-9 w-9"><Save /></Button>
                               <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
                                 <X className="w-5 h-5" />
                               </Button>
@@ -221,7 +294,7 @@ export default function Home() {
                                 : 'Consulte'}
                             </p>
                             {user && (
-                              <Button onClick={() => handleStartEditing(product)} variant="outline" size="icon" className="h-9 w-9">
+                              <Button onClick={() => handleStartEditingProduct(product)} variant="outline" size="icon" className="h-9 w-9">
                                 <Edit className="w-4 h-4"/>
                               </Button>
                             )}

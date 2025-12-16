@@ -67,6 +67,34 @@
         "id",
         "username"
       ]
+    },
+    "SiteInfo": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SiteInfo",
+      "type": "object",
+      "description": "Stores general site information and branding text.",
+      "properties": {
+        "siteName": {
+          "type": "string",
+          "description": "The name of the site, displayed in the header."
+        },
+        "heroTitle1": {
+          "type": "string",
+          "description": "The first line of the hero section title."
+        },
+        "heroTitle2": {
+          "type": "string",
+          "description": "The second line of the hero section title."
+        },
+        "heroLocation": {
+          "type": "string",
+          "description": "The location text displayed in the hero section."
+        },
+        "heroSlogan": {
+          "type": "string",
+          "description": "The slogan or tagline displayed in the hero section."
+        }
+      }
     }
   },
   "auth": {
@@ -105,6 +133,22 @@
             {
               "name": "userId",
               "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "siteInfo/{docId}",
+        "definition": {
+          "entityName": "SiteInfo",
+          "schema": {
+            "$ref": "#/backend/entities/SiteInfo"
+          },
+          "description": "Stores site configuration and branding elements. It is intended to have only one document.",
+          "params": [
+            {
+              "name": "docId",
+              "description": "The unique identifier for the site info document."
             }
           ]
         }

@@ -31,3 +31,11 @@ export type Product = {
   price: number;
   category: Category;
 };
+
+export type SiteInfo = {
+  siteName: string;
+  heroTitle1: string;
+  heroTitle2: string;
+  heroLocation: string;
+  heroSlogan: string;
+};

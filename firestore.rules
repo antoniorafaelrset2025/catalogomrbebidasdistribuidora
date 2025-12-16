@@ -5,28 +5,28 @@
  * restricted to authenticated users. User profile data is strictly private and
  * can only be accessed or modified by the user who owns it.
  *
- * Data Structure: The data is organized into two separate top-level collections:
+ * Data Structure: The data is organized into three separate top-level collections:
  * 1.  /products/{productId}: Contains all public product information.
  * 2.  /users/{userId}: Contains private user profile information.
+ * 3.  /siteInfo/{docId}: Contains global site information, publicly readable and editable by authenticated users.
  * This flat structure is simple and performant for the specified access patterns.
  *
  * Key Security Decisions:
- * - Product Visibility: All product documents are public and can be listed or
+ * - Product and SiteInfo Visibility: All product and siteInfo documents are public and can be listed or
  *   retrieved by anyone.
- * - Product Modification: Any user who is authenticated (including via anonymous
- *   login) is granted permission to create, update, and delete any product.
- *   There is no concept of product ownership.
+ * - Product and SiteInfo Modification: Any user who is authenticated (including via anonymous
+ *   login) is granted permission to create, update, and delete any product or site information.
  * - User Privacy: Users can only access their own document within the /users
  *   collection. Listing users is explicitly disallowed to protect user privacy.
  *
  * Denormalization for Authorization: This ruleset does not require denormalization.
- * Authorization for products is based solely on the user's authentication state
+ * Authorization for products and siteInfo is based solely on the user's authentication state
  * (`request.auth != null`), and authorization for user documents is based on the
  * document's path, avoiding the need for extra data fields or database reads.
  *
  * Structural Segregation: The use of separate top-level collections for public
- * (`/products`) and private (`/users`) data provides a clear and secure separation
- * of concerns, making list queries on the public collection safe and efficient.
+ * (`/products`, `/siteInfo`) and private (`/users`) data provides a clear and secure separation
+ * of concerns, making list queries on the public collections safe and efficient.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -128,6 +128,17 @@ service cloud.firestore {
       allow create: if isCreatingOwnUserDoc(userId);
       allow update: if isUpdatingOwnUserDoc(userId);
       allow delete: if isOwner(userId) && docExists();
+    }
+
+     /**
+     * @description Controls access to the site information document.
+     * @path /siteInfo/{docId}
+     * @allow (get, list) Anyone can read the site information.
+     * @allow (create, update, delete) Only authenticated users can modify site info.
+     */
+    match /siteInfo/{docId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
     }
   }
 }
