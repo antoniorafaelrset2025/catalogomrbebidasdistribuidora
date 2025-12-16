@@ -44,12 +44,14 @@ type AddProductDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   categories: Category[];
+  onProductAdded: () => void;
 };
 
 export function AddProductDialog({
   isOpen,
   onOpenChange,
   categories,
+  onProductAdded,
 }: AddProductDialogProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -86,6 +88,7 @@ export function AddProductDialog({
             });
             form.reset();
             onOpenChange(false);
+            onProductAdded(); // Callback to refresh the product list
         }).catch((e) => {
             const permissionError = new FirestorePermissionError({
                 path: productsCollectionRef.path,

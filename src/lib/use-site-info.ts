@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { doc, setDoc, getDoc, Firestore } from 'firebase/firestore';
 import { useFirestore, useDoc } from '@/firebase';
 import type { SiteInfo } from '@/lib/types';
@@ -22,10 +22,11 @@ const defaultSiteInfo: SiteInfo = {
     heroPhoneDisplay2: '(85) 99412-5603',
 };
 
-let seedingCheckCompleted = false;
+let seedingChecked = false;
 
 async function seedSiteInfoIfEmpty(firestore: Firestore) {
-  if (seedingCheckCompleted) return;
+  if (seedingChecked) return;
+  seedingChecked = true;
 
   const siteInfoRef = doc(firestore, 'siteInfo', SITE_INFO_DOC_ID);
   
@@ -36,24 +37,19 @@ async function seedSiteInfoIfEmpty(firestore: Firestore) {
         await setDoc(siteInfoRef, defaultSiteInfo);
         console.log('Site info seeded successfully!');
     } else {
-        // If the document exists, we can still merge to add new fields from defaultSiteInfo
-        // that might not be in the database yet from previous versions.
-        await setDoc(siteInfoRef, defaultSiteInfo, { merge: true });
-        console.log('Site info document exists. Ensured all fields are present.');
+        console.log('Site info document exists. Skipping seed.');
     }
-    seedingCheckCompleted = true;
   } catch (error) {
     console.warn("Could not check or seed site info (this is expected on first load without auth):", error);
-    seedingCheckCompleted = true; // Mark as checked to prevent retries
   }
 }
 
 export function useSiteInfo() {
   const firestore = useFirestore();
-  const [initialLoading, setInitialLoading] = useState(true);
-  
+  const [key, setKey] = useState(0);
+   
   useEffect(() => {
-    if (firestore && !seedingCheckCompleted) {
+    if (firestore) {
       seedSiteInfoIfEmpty(firestore);
     }
   }, [firestore]);
@@ -61,24 +57,16 @@ export function useSiteInfo() {
   const siteInfoRef = useMemoFirebase(() => {
       if (!firestore) return null;
       return doc(firestore, 'siteInfo', SITE_INFO_DOC_ID);
-  }, [firestore]);
+  }, [firestore, key]);
 
 
   const { data: firestoreInfo, isLoading: isFirestoreLoading, error } = useDoc<SiteInfo>(siteInfoRef);
   
-  useEffect(() => {
-    if(!isFirestoreLoading) {
-      setInitialLoading(false);
-    }
-  }, [isFirestoreLoading]);
+  const refreshSiteInfo = useCallback(() => {
+    setKey(prevKey => prevKey + 1);
+  }, []);
 
-  // Use firestore info if available, otherwise fallback to static default.
-  // We also merge to ensure all fields are present even if the DB doc is partial.
-  const siteInfo = firestoreInfo 
-    ? { ...defaultSiteInfo, ...firestoreInfo } 
-    : defaultSiteInfo;
+  const siteInfo = firestoreInfo ?? defaultSiteInfo;
     
-  const isLoading = initialLoading && isFirestoreLoading;
-
-  return { siteInfo, isLoading, error, siteInfoRef };
+  return { siteInfo, isLoading: isFirestoreLoading, error, siteInfoRef, refreshSiteInfo };
 }

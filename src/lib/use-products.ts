@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { collection, doc, writeBatch, getDocs, Firestore } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -8,13 +8,14 @@ import { products as staticProducts } from '@/lib/products';
 import type { Product } from '@/lib/types';
 import { useMemoFirebase } from '@/firebase/provider';
 
-let seedingCheckCompleted = false;
+let seedingChecked = false;
 
 async function seedDatabaseIfEmpty(firestore: Firestore) {
-  if (seedingCheckCompleted) return;
-
+  if (seedingChecked) {
+    return;
+  }
+  seedingChecked = true;
   const productsCollectionRef = collection(firestore, 'products');
-  seedingCheckCompleted = true; // Set immediately to prevent multiple runs
   
   try {
     const snapshot = await getDocs(productsCollectionRef);
@@ -27,6 +28,7 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
                 // Ensure there's a description, even if it's empty
                 description: product.description || '' 
             };
+            // When seeding, we use the predefined ID from the static list
             const docRef = doc(productsCollectionRef, product.id);
             batch.set(docRef, docData);
         });
@@ -38,39 +40,35 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
     }
 
   } catch (error) {
-    // This might fail due to permissions, which is okay for non-authed users.
-    // The static list will be used as a fallback.
     console.warn("Could not check or seed database (this is expected on first load without auth):", error);
   }
 }
 
 export function useProducts() {
   const firestore = useFirestore();
-  const [isSeeding, setIsSeeding] = useState(true);
+  const [key, setKey] = useState(0); // State to force re-render
   
   useEffect(() => {
-    if (firestore && !seedingCheckCompleted) {
-      seedDatabaseIfEmpty(firestore).finally(() => {
-        setIsSeeding(false);
-      });
-    } else {
-      setIsSeeding(false);
+    if (firestore) {
+      seedDatabaseIfEmpty(firestore);
     }
   }, [firestore]);
 
   const productsQuery = useMemoFirebase(() => {
       if (!firestore) return null;
       return collection(firestore, 'products');
-  }, [firestore]);
+  }, [firestore, key]);
 
 
   const { data: firestoreProducts, isLoading: isFirestoreLoading, error } = useCollection<Product>(productsQuery);
 
-  const isLoading = isSeeding || (firestoreProducts === null && isFirestoreLoading);
+  const refreshProducts = useCallback(() => {
+    // Changing the key will re-create the query and trigger useCollection to refetch.
+    setKey(prevKey => prevKey + 1);
+  }, []);
 
   // Use firestore products if available, otherwise fallback to static products.
-  // This fallback is mostly for the brief moment before the first Firestore fetch.
   const products = firestoreProducts ?? staticProducts;
   
-  return { products, isLoading, error };
+  return { products, isLoading: isFirestoreLoading, error, refreshProducts };
 }

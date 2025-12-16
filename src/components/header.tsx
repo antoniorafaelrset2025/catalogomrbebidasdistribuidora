@@ -36,7 +36,7 @@ export default function Header() {
   const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef } = useSiteInfo();
+  const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef, refreshSiteInfo } = useSiteInfo();
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   
   const [isEditingSiteName, setIsEditingSiteName] = useState(false);
@@ -56,6 +56,7 @@ export default function Header() {
             description: 'O nome do site foi atualizado.',
           });
           setIsEditingSiteName(false);
+          refreshSiteInfo();
         })
         .catch(() => {
           const permissionError = new FirestorePermissionError({

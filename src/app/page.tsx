@@ -5,23 +5,39 @@ import type { Product, Category, SiteInfo } from '@/lib/types';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Edit, Save, X, Phone, PlusCircle } from 'lucide-react';
-import Link from 'next/link';
+import { Search, MapPin, Edit, Save, X, Phone, PlusCircle, MoreVertical, Trash2 } from 'lucide-react';
 import { useProducts } from '@/lib/use-products';
 import { useSiteInfo } from '@/lib/use-site-info';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { AddProductDialog } from '@/components/add-product-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 
 type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation' | 'heroPhoneDisplay' | 'heroLocation2' | 'heroPhoneDisplay2';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
-  const { products, isLoading: areProductsLoading } = useProducts();
-  const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef } = useSiteInfo();
+  const { products, isLoading: areProductsLoading, refreshProducts } = useProducts();
+  const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef, refreshSiteInfo } = useSiteInfo();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -33,6 +49,7 @@ export default function Home() {
   const [editingField, setEditingField] = useState<EditableField | null>(null);
   const [fieldValue, setFieldValue] = useState('');
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   const isLoading = areProductsLoading || isSiteInfoLoading;
 
@@ -81,6 +98,7 @@ export default function Home() {
             description: 'O produto foi atualizado.',
           });
           setEditingProductId(null);
+          refreshProducts();
         })
         .catch(() => {
           const permissionError = new FirestorePermissionError({
@@ -93,6 +111,28 @@ export default function Home() {
     }
   };
   
+  const handleDeleteProduct = async () => {
+    if (firestore && productToDelete) {
+      const productRef = doc(firestore, 'products', productToDelete.id);
+      deleteDoc(productRef)
+        .then(() => {
+          toast({
+            title: 'Sucesso!',
+            description: 'O produto foi excluído.',
+          });
+          setProductToDelete(null);
+          refreshProducts();
+        })
+        .catch(() => {
+          const permissionError = new FirestorePermissionError({
+            path: productRef.path,
+            operation: 'delete',
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        });
+    }
+  };
+
   const handleUpdateSiteInfo = async () => {
     if (firestore && editingField && siteInfoRef) {
       const data: Partial<SiteInfo> = { [editingField]: fieldValue };
@@ -113,6 +153,7 @@ export default function Home() {
           });
           setEditingField(null);
           setFieldValue('');
+          refreshSiteInfo();
         })
         .catch(() => {
           const permissionError = new FirestorePermissionError({
@@ -189,8 +230,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="relative text-center pt-8 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-background/80 via-background/90">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="relative text-center pt-8 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="relative">
           <div className="flex justify-center items-center mb-4 pt-4">
             <Image
@@ -435,9 +475,23 @@ export default function Home() {
                                 : 'Consulte'}
                             </p>
                             {user && (
-                              <Button onClick={() => handleStartEditingProduct(product)} variant="outline" size="icon" className="h-9 w-9">
-                                <Edit className="w-4 h-4"/>
-                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                                    <MoreVertical className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onSelect={() => handleStartEditingProduct(product)}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    <span>Editar</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => setProductToDelete(product)} className="text-red-600">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <span>Excluir</span>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             )}
                           </>
                         )}
@@ -464,8 +518,25 @@ export default function Home() {
             isOpen={isAddProductOpen}
             onOpenChange={setIsAddProductOpen}
             categories={categories.filter((c) => c !== 'Todos') as Category[]}
+            onProductAdded={refreshProducts}
         />
       )}
+      <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação não pode ser desfeita. Isso excluirá permanentemente o produto <strong>{productToDelete?.name}</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProduct} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
