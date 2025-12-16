@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { products, categories } from '@/lib/products';
 import type { Product, Category } from '@/lib/types';
-import ProductCard from '@/components/product-card';
+import ProductListItem from '@/components/product-list-item';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -109,9 +109,9 @@ export default function Home() {
 
         <div className="lg:col-span-3">
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+            <div className="space-y-4">
               {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductListItem key={product.id} product={product} />
               ))}
             </div>
           ) : (
