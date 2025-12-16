@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { collection, doc, writeBatch, getDocs, Firestore } from 'firebase/firestore';
-import { useFirestore, useUser } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { products as staticProducts } from '@/lib/products';
 import type { Product } from '@/lib/types';
 import { useMemoFirebase } from '@/firebase/provider';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+
+let isSeeding = false;
+let seedingCompleted = false;
 
 async function seedDatabase(firestore: Firestore) {
+  if (isSeeding || seedingCompleted) return;
+
+  isSeeding = true;
   const productsCollectionRef = collection(firestore, 'products');
   
   try {
@@ -26,26 +30,28 @@ async function seedDatabase(firestore: Firestore) {
       
       await batch.commit();
       console.log('Database seeded successfully!');
+      seedingCompleted = true;
+    } else {
+      seedingCompleted = true;
     }
   } catch (error) {
-    if (error instanceof FirestorePermissionError || (error as any).code === 'permission-denied') {
-        console.warn('Permission denied to check or seed database. This is expected for non-authenticated users.');
-    } else {
-        console.error("Error seeding database:", error);
-    }
+    // This might fail due to permissions, which is okay for non-authed users.
+    // The static list will be used as a fallback.
+    console.warn("Could not seed database (this is expected on first load without auth):", error);
+  } finally {
+    isSeeding = false;
   }
 }
 
 export function useProducts() {
   const firestore = useFirestore();
-  const { user } = useUser();
   const [initialLoading, setInitialLoading] = useState(true);
   
   useEffect(() => {
-    if (firestore && user) {
+    if (firestore && !seedingCompleted) {
       seedDatabase(firestore);
     }
-  }, [firestore, user]);
+  }, [firestore]);
 
   const productsQuery = useMemoFirebase(() => {
       if (!firestore) return null;
@@ -61,6 +67,9 @@ export function useProducts() {
     }
   }, [isFirestoreLoading]);
 
+  // Use firestore products if available, otherwise fallback to static products.
+  // This ensures that products are always displayed, even before Firestore has loaded
+  // or if the user is offline.
   const products = firestoreProducts && firestoreProducts.length > 0 ? firestoreProducts : staticProducts;
   const isLoading = initialLoading && isFirestoreLoading;
 
