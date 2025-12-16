@@ -17,6 +17,9 @@ const defaultSiteInfo: SiteInfo = {
     heroSlogan: 'Explore nossa seleção completa de tabacaria e bebidas premium',
     heroPhone: '5585992234683',
     heroPhoneDisplay: '(85) 99223-4683',
+    heroLocation2: 'MARACANAÚ',
+    heroPhone2: '5585999999999',
+    heroPhoneDisplay2: '(85) 99999-9999',
 };
 
 

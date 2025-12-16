@@ -101,6 +101,18 @@
         "heroPhoneDisplay": {
           "type": "string",
           "description": "The formatted phone number to display on the page."
+        },
+        "heroLocation2": {
+          "type": "string",
+          "description": "The second location text displayed in the hero section."
+        },
+        "heroPhone2": {
+          "type": "string",
+          "description": "The second phone number for WhatsApp, used to construct the link. Should only contain numbers."
+        },
+        "heroPhoneDisplay2": {
+          "type": "string",
+          "description": "The second formatted phone number to display on the page."
         }
       }
     }
