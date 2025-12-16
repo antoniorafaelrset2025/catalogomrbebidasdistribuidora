@@ -28,8 +28,8 @@ export const products: Product[] = [
   { id: 'prod-20', name: 'PANDORA VERMELHO', description: 'Maço de cigarros Pandora Vermelho.', price: 28.90, category: 'Cigarros Nacional' },
   { id: 'prod-21', name: 'NISE VERMELHO', description: 'Maço de cigarros Nise Vermelho.', price: 28.90, category: 'Cigarros Nacional' },
   { id: 'prod-22', name: 'NISE BRANCO', description: 'Maço de cigarros Nise Branco.', price: 28.90, category: 'Cigarros Nacional' },
-  { id: 'prod-23', name: 'K-LINT SILVER', description: 'Maço de cigarros K-Lint Silver.', price: 0, category: 'Cigarros Nacional' }, // Price not provided
-  { id: 'prod-24', name: 'GUDANG GARAM (1 CART)', description: 'Cartão de cigarros Gudang Garam.', price: 0, category: 'Cigarros Nacional' }, // Price not provided
+  { id: 'prod-23', name: 'K-LINT SILVER', description: 'Maço de cigarros K-Lint Silver.', price: 0, category: 'Cigarros Nacional' },
+  { id: 'prod-24', name: 'GUDANG GARAM (1 CART)', description: 'Cartão de cigarros Gudang Garam.', price: 0, category: 'Cigarros Nacional' },
 
   // Fumos
   { id: 'prod-25', name: 'FUMO MELIÁ', description: 'Pacote de fumo Meliá.', price: 63.90, category: 'Fumos' },
