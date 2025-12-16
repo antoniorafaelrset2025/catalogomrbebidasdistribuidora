@@ -15,11 +15,11 @@ const defaultSiteInfo: SiteInfo = {
     heroTitle2: 'DISTRIBUIDORA',
     heroLocation: 'FORTALEZA',
     heroSlogan: 'Explore nossa seleção completa de tabacaria e bebidas premium',
-    heroPhone: '5585992234683',
-    heroPhoneDisplay: '(85) 99223-4683',
+    heroPhone: '5585994125603',
+    heroPhoneDisplay: '(85) 99412-5603',
     heroLocation2: 'CUMBUCO',
-    heroPhone2: '5585994125603',
-    heroPhoneDisplay2: '(85) 99412-5603',
+    heroPhone2: '5585992234683',
+    heroPhoneDisplay2: '(85) 99223-4683',
 };
 
 let seedingChecked = false;
