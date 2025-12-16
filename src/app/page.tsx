@@ -394,21 +394,12 @@ export default function Home() {
                     <div className="flex justify-between items-start gap-4">
                       <div className="flex-1">
                         {editingProductId === product.id && user ? (
-                           <div className="flex flex-col gap-2">
-                             <Input
-                               type="text"
-                               value={newName}
-                               onChange={(e) => setNewName(e.target.value)}
-                               className="text-2xl font-semibold leading-none tracking-tight"
-                             />
-                              <Input 
-                                type="number"
-                                value={newPrice}
-                                onChange={(e) => setNewPrice(parseFloat(e.target.value))}
-                                className="w-32 text-base"
-                                placeholder={product.price > 0 ? product.price.toFixed(2) : '0.00'}
-                              />
-                           </div>
+                           <Input
+                             type="text"
+                             value={newName}
+                             onChange={(e) => setNewName(e.target.value)}
+                             className="text-2xl font-semibold leading-none tracking-tight h-auto"
+                           />
                         ) : (
                           <CardTitle>{product.name}</CardTitle>
                         )}
@@ -416,6 +407,13 @@ export default function Home() {
                       <div className="text-right flex items-center gap-2">
                          {editingProductId === product.id && user ? (
                             <div className="flex items-center gap-2">
+                               <Input 
+                                type="number"
+                                value={newPrice}
+                                onChange={(e) => setNewPrice(parseFloat(e.target.value))}
+                                className="w-32 text-base"
+                                placeholder={product.price > 0 ? product.price.toFixed(2) : '0.00'}
+                              />
                               <Button onClick={() => handleUpdateProduct(product.id, { name: newName, price: Number(newPrice) })} size="icon" className="h-9 w-9"><Save /></Button>
                               <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
                                 <X className="w-5 h-5" />
@@ -456,3 +454,5 @@ export default function Home() {
     </>
   );
 }
+
+    
