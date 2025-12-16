@@ -5,14 +5,24 @@ import type { Product, Category } from '@/lib/types';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin } from 'lucide-react';
+import { Search, MapPin, Edit, Save, X } from 'lucide-react';
 import Link from 'next/link';
 import { useProducts } from '@/lib/use-products';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useUser, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
+import { doc, updateDoc } from 'firebase/firestore';
+
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const { products, isLoading } = useProducts();
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [newPrice, setNewPrice] = useState<number | string>('');
 
   const categories: (Category | 'Todos')[] = [
     'Todos',
@@ -31,6 +41,7 @@ export default function Home() {
     'DESTILADOS',
     'VINHOS',
     'ENERGÉTICOS',
+    'BEBIDAS',
   ];
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
 
@@ -47,6 +58,48 @@ export default function Home() {
       return matchesSearch && matchesCategory;
     });
   }, [products, searchTerm, selectedCategory]);
+
+  const handlePriceUpdate = async (productId: string) => {
+    if (typeof newPrice !== 'number' || newPrice < 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Preço inválido',
+        description: 'Por favor, insira um número válido.',
+      });
+      return;
+    }
+    if (firestore) {
+      const productRef = doc(firestore, 'products', productId);
+      const updatedData = { price: newPrice };
+      updateDoc(productRef, updatedData)
+        .then(() => {
+          toast({
+            title: 'Sucesso!',
+            description: 'O preço foi atualizado.',
+          });
+          setEditingProductId(null);
+        })
+        .catch(() => {
+            const permissionError = new FirestorePermissionError({
+              path: productRef.path,
+              operation: 'update',
+              requestResourceData: updatedData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        });
+    }
+  };
+
+  const handleStartEditing = (product: Product) => {
+    setEditingProductId(product.id);
+    setNewPrice(product.price > 0 ? product.price : '');
+  };
+
+  const handleCancelEditing = () => {
+    setEditingProductId(null);
+    setNewPrice('');
+  };
+
 
   return (
     <>
@@ -137,12 +190,36 @@ export default function Home() {
                           </Link>
                         </CardTitle>
                       </div>
-                      <div className="text-right flex items-center gap-4">
-                        <p className="text-xl font-bold whitespace-nowrap">
-                          {product.price > 0
-                            ? `R$${product.price.toFixed(2)}`
-                            : 'Consulte'}
-                        </p>
+                      <div className="text-right flex items-center gap-2">
+                         {editingProductId === product.id && user ? (
+                            <div className="flex items-center gap-2">
+                              <Input 
+                                type="number"
+                                value={newPrice}
+                                onChange={(e) => setNewPrice(parseFloat(e.target.value))}
+                                className="w-28 text-base"
+                                placeholder={product.price > 0 ? product.price.toFixed(2) : '0.00'}
+                                autoFocus
+                              />
+                              <Button onClick={() => handlePriceUpdate(product.id)} size="icon" className="h-9 w-9"><Save /></Button>
+                              <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
+                                <X className="w-5 h-5" />
+                              </Button>
+                            </div>
+                        ) : (
+                          <>
+                            <p className="text-xl font-bold whitespace-nowrap">
+                              {product.price > 0
+                                ? `R$${product.price.toFixed(2)}`
+                                : 'Consulte'}
+                            </p>
+                            {user && (
+                              <Button onClick={() => handleStartEditing(product)} variant="outline" size="icon" className="h-9 w-9">
+                                <Edit className="w-4 h-4"/>
+                              </Button>
+                            )}
+                          </>
+                        )}
                       </div>
                     </div>
                   </CardHeader>
