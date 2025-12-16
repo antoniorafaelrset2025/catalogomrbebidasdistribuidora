@@ -183,13 +183,31 @@ export default function Home() {
           <div className="flex items-center justify-center gap-2 mt-4">
             <MapPin className="w-5 h-5 text-muted-foreground" />
             {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
-              <div className="group flex items-center">
-                 <p className="text-muted-foreground font-semibold">{siteInfo.heroLocation}</p>
-                 {user && (
-                    <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100">
-                        <Edit className="w-4 h-4"/>
-                    </Button>
-                 )}
+              <div className="group flex items-center justify-center">
+                 {editingField === 'heroLocation' && user ? (
+                    <div className="flex justify-center items-center gap-2">
+                        <Input
+                          type="text"
+                          value={fieldValue}
+                          onChange={(e) => setFieldValue(e.target.value)}
+                          className="text-muted-foreground font-semibold h-auto p-0 border-dashed text-center"
+                        />
+                        <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8"><Save className="w-4 h-4"/></Button>
+                        <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8">
+                          <X className="w-4 h-4" />
+                        </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-muted-foreground font-semibold">{siteInfo.heroLocation}</p>
+                      {user && (
+                          <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-9 w-9 opacity-0 group-hover:opacity-100">
+                              <Edit className="w-4 h-4"/>
+                          </Button>
+                      )}
+                    </>
+                  )
+                 }
               </div>
             )}
           </div>
