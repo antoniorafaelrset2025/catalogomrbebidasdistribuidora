@@ -16,6 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChangePasswordDialog } from '@/components/change-password-dialog';
 import { useState } from 'react';
+import Image from 'next/image';
 
 function getInitials(name?: string | null) {
   if (!name) return '';
@@ -40,11 +41,13 @@ export default function Header() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center">
           <Link href="/" className="mr-auto">
             <div className="flex items-center gap-2">
-              <div className="bg-primary rounded-full p-1 w-10 h-10 flex items-center justify-center">
-                <div className="bg-black rounded-full w-full h-full flex items-center justify-center">
-                  <span className="text-primary text-lg font-black">MR</span>
-                </div>
-              </div>
+              <Image
+                src="/logo.png"
+                alt="MR Bebidas Logo"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
               <span className="text-lg font-bold">MR Bebidas</span>
             </div>
           </Link>

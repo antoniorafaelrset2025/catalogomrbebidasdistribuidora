@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useUser, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { doc, updateDoc } from 'firebase/firestore';
+import Image from 'next/image';
 
 
 export default function Home() {
@@ -107,11 +108,13 @@ export default function Home() {
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative">
           <div className="flex justify-center items-center mb-4">
-            <div className="bg-primary rounded-full p-2 w-32 h-32 flex items-center justify-center">
-              <div className="bg-black rounded-full w-full h-full flex items-center justify-center">
-                <span className="text-primary text-5xl font-black">MR</span>
-              </div>
-            </div>
+            <Image
+              src="/logo.png"
+              alt="MR Bebidas Distribuidora Logo"
+              width={128}
+              height={128}
+              className="rounded-full"
+            />
           </div>
           <h1 className="text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground">
             MR BEBIDAS
