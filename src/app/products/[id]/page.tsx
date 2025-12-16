@@ -27,9 +27,10 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
 
   const [isEditing, setIsEditing] = useState(false);
   const [newPrice, setNewPrice] = useState<number | string>('');
+  const [newName, setNewName] = useState<string>('');
 
   const productRef = useMemoFirebase(() => {
-    if (!firestore) return null;
+    if (!firestore || !params.id) return null;
     return doc(firestore, 'products', params.id);
   }, [firestore, params.id]);
 
@@ -55,7 +56,7 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
     notFound();
   }
   
-  const handlePriceUpdate = async () => {
+  const handleUpdate = async () => {
     if (typeof newPrice !== 'number' || newPrice < 0) {
       toast({
         variant: 'destructive',
@@ -64,13 +65,21 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
       });
       return;
     }
+    if (!newName) {
+      toast({
+        variant: 'destructive',
+        title: 'Nome inválido',
+        description: 'Por favor, insira um nome para o produto.',
+      });
+      return;
+    }
     if (productRef) {
-      const updatedData = { price: newPrice };
+      const updatedData = { price: newPrice, name: newName };
       updateDoc(productRef, updatedData)
         .then(() => {
           toast({
             title: 'Sucesso!',
-            description: 'O preço foi atualizado.',
+            description: 'O produto foi atualizado.',
           });
           setIsEditing(false);
         })
@@ -95,9 +104,18 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
               <p className="text-sm font-medium text-accent-foreground bg-accent/80 inline-block px-3 py-1 rounded-full mb-2">
                 {product.category}
               </p>
-              <h1 className="text-4xl font-bold tracking-tight font-headline sm:text-5xl">
-                {product.name}
-              </h1>
+              {isEditing && user ? (
+                <Input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="text-4xl font-bold tracking-tight font-headline sm:text-5xl h-auto"
+                />
+              ) : (
+                <h1 className="text-4xl font-bold tracking-tight font-headline sm:text-5xl">
+                  {product.name}
+                </h1>
+              )}
             </div>
 
             <div className="flex items-center gap-4">
@@ -110,7 +128,7 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
                       className="text-3xl font-semibold w-48"
                       placeholder={product.price > 0 ? product.price.toFixed(2) : '0.00'}
                     />
-                    <Button onClick={handlePriceUpdate} size="icon"><Save /></Button>
+                    <Button onClick={handleUpdate} size="icon"><Save /></Button>
                     <Button onClick={() => setIsEditing(false)} variant="ghost" size="icon">
                       <X className="w-5 h-5" />
                     </Button>
@@ -126,6 +144,7 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
                 <Button onClick={() => {
                   setIsEditing(true);
                   setNewPrice(product.price > 0 ? product.price : '');
+                  setNewName(product.name);
                 }} variant="outline" size="icon">
                   <Edit className="w-5 h-5"/>
                 </Button>

@@ -24,6 +24,7 @@ export default function Home() {
 
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [newPrice, setNewPrice] = useState<number | string>('');
+  const [newName, setNewName] = useState<string>('');
 
   const categories: (Category | 'Todos')[] = [
     'Todos',
@@ -60,33 +61,24 @@ export default function Home() {
     });
   }, [products, searchTerm, selectedCategory]);
 
-  const handlePriceUpdate = async (productId: string) => {
-    if (typeof newPrice !== 'number' || newPrice < 0) {
-      toast({
-        variant: 'destructive',
-        title: 'Preço inválido',
-        description: 'Por favor, insira um número válido.',
-      });
-      return;
-    }
+  const handleUpdate = async (productId: string, data: Partial<Product>) => {
     if (firestore) {
       const productRef = doc(firestore, 'products', productId);
-      const updatedData = { price: newPrice };
-      updateDoc(productRef, updatedData)
+      updateDoc(productRef, data)
         .then(() => {
           toast({
             title: 'Sucesso!',
-            description: 'O preço foi atualizado.',
+            description: 'O produto foi atualizado.',
           });
           setEditingProductId(null);
         })
         .catch(() => {
-            const permissionError = new FirestorePermissionError({
-              path: productRef.path,
-              operation: 'update',
-              requestResourceData: updatedData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
+          const permissionError = new FirestorePermissionError({
+            path: productRef.path,
+            operation: 'update',
+            requestResourceData: data,
+          });
+          errorEmitter.emit('permission-error', permissionError);
         });
     }
   };
@@ -94,11 +86,13 @@ export default function Home() {
   const handleStartEditing = (product: Product) => {
     setEditingProductId(product.id);
     setNewPrice(product.price > 0 ? product.price : '');
+    setNewName(product.name);
   };
 
   const handleCancelEditing = () => {
     setEditingProductId(null);
     setNewPrice('');
+    setNewName('');
   };
 
 
@@ -107,7 +101,7 @@ export default function Home() {
       <div className="relative text-center pt-8 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-background/80 via-background/90">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative">
-          <div className="flex justify-center items-center mb-4">
+          <div className="flex justify-center items-center mb-4 pt-4">
             <Image
               src="/logo.png"
               alt="MR Bebidas Distribuidora Logo"
@@ -182,29 +176,39 @@ export default function Home() {
                   className="transition-all duration-300 border hover:shadow-lg hover:border-primary"
                 >
                   <CardHeader>
-                    <div className="flex justify-between items-center gap-4">
+                    <div className="flex justify-between items-start gap-4">
                       <div className="flex-1">
-                        <CardTitle>
-                          <Link
-                            href={`/products/${product.id}`}
-                            className="hover:underline"
-                          >
-                            {product.name}
-                          </Link>
-                        </CardTitle>
-                      </div>
-                      <div className="text-right flex items-center gap-2">
-                         {editingProductId === product.id && user ? (
-                            <div className="flex items-center gap-2">
+                        {editingProductId === product.id && user ? (
+                           <div className="flex flex-col gap-2">
+                             <Input
+                               type="text"
+                               value={newName}
+                               onChange={(e) => setNewName(e.target.value)}
+                               className="text-2xl font-semibold leading-none tracking-tight"
+                             />
                               <Input 
                                 type="number"
                                 value={newPrice}
                                 onChange={(e) => setNewPrice(parseFloat(e.target.value))}
-                                className="w-28 text-base"
+                                className="w-32 text-base"
                                 placeholder={product.price > 0 ? product.price.toFixed(2) : '0.00'}
-                                autoFocus
                               />
-                              <Button onClick={() => handlePriceUpdate(product.id)} size="icon" className="h-9 w-9"><Save /></Button>
+                           </div>
+                        ) : (
+                          <CardTitle>
+                            <Link
+                              href={`/products/${product.id}`}
+                              className="hover:underline"
+                            >
+                              {product.name}
+                            </Link>
+                          </CardTitle>
+                        )}
+                      </div>
+                      <div className="text-right flex items-center gap-2">
+                         {editingProductId === product.id && user ? (
+                            <div className="flex items-center gap-2">
+                              <Button onClick={() => handleUpdate(product.id, { name: newName, price: Number(newPrice) })} size="icon" className="h-9 w-9"><Save /></Button>
                               <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
                                 <X className="w-5 h-5" />
                               </Button>
