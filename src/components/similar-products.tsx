@@ -22,7 +22,7 @@ export default function SimilarProducts({
   return (
     <section className="space-y-8">
       <h2 className="text-3xl font-bold tracking-tight text-center">
-        You Might Also Like
+        Você também pode gostar
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {similar.map((product) => (

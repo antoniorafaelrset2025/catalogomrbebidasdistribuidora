@@ -1,5 +1,3 @@
-import type { ImagePlaceholder } from './placeholder-images';
-
 export type Review = {
   id: string;
   author: string;
@@ -8,7 +6,7 @@ export type Review = {
   comment: string;
 };
 
-export type Category = 'Electronics' | 'Office' | 'Lighting';
+export type Category = 'Cigarros Sousa Cruz' | 'Cigarros Nacional' | 'Fumos' | 'Seda' | 'Isqueiros';
 
 export type Product = {
   id: string;
@@ -16,6 +14,4 @@ export type Product = {
   description: string;
   price: number;
   category: Category;
-  images: ImagePlaceholder[];
-  reviews: Review[];
 };

@@ -1,119 +1,49 @@
-import type { Product, Category, Review } from './types';
-import allImages from './placeholder-images.json';
+import type { Product, Category } from './types';
 
-const { placeholderImages } = allImages;
-
-export const categories: Category[] = ['Office', 'Electronics', 'Lighting'];
-
-const reviews: Review[] = [
-  {
-    id: 'review-1',
-    author: 'Alex Johnson',
-    avatarUrl: 'https://picsum.photos/seed/avatar1/40/40',
-    rating: 5,
-    comment: 'Absolutely love this product! It has exceeded all my expectations. Highly recommended!',
-  },
-  {
-    id: 'review-2',
-    author: 'Maria Garcia',
-    avatarUrl: 'https://picsum.photos/seed/avatar2/40/40',
-    rating: 4,
-    comment: 'Great value for the price. It works well, although the setup was a bit tricky.',
-  },
-  {
-    id: 'review-3',
-    author: 'James Smith',
-    avatarUrl: 'https://picsum.photos/seed/avatar3/40/40',
-    rating: 5,
-    comment: 'Fantastic build quality and beautiful design. I use it every day.',
-  },
-  {
-    id: 'review-4',
-    author: 'Priya Patel',
-    avatarUrl: 'https://picsum.photos/seed/avatar4/40/40',
-    rating: 3,
-    comment: 'It\'s a decent product, but I was expecting a bit more for the price. It gets the job done.',
-  },
-  {
-    id: 'review-5',
-    author: 'Chen Wang',
-    avatarUrl: 'https://picsum.photos/seed/avatar5/40/40',
-    rating: 4,
-    comment: 'Very satisfied with my purchase. It arrived quickly and was exactly as described.',
-  },
-];
+export const categories: Category[] = ['Cigarros Sousa Cruz', 'Cigarros Nacional', 'Fumos', 'Seda', 'Isqueiros'];
 
 export const products: Product[] = [
-  {
-    id: 'prod-1',
-    name: 'Ergonomic Office Chair',
-    description: 'Our ergonomic office chair provides optimal comfort and support for long hours of work. Featuring adjustable lumbar support, armrests, and seat height, it\'s designed to improve posture and reduce back pain.',
-    price: 299.99,
-    category: 'Office',
-    images: placeholderImages.filter(img => img.id.includes('ergonomic-chair')),
-    reviews: [reviews[0], reviews[2]],
-  },
-  {
-    id: 'prod-2',
-    name: 'Sleek Wireless Mouse',
-    description: 'Experience seamless navigation with this sleek and responsive wireless mouse. Its ergonomic design fits comfortably in your hand, and the high-precision sensor works on almost any surface.',
-    price: 49.99,
-    category: 'Electronics',
-    images: placeholderImages.filter(img => img.id.includes('wireless-mouse')),
-    reviews: [reviews[1], reviews[4]],
-  },
-  {
-    id: 'prod-3',
-    name: 'Mechanical Keyboard',
-    description: 'Elevate your typing experience with our mechanical keyboard. It offers tactile feedback and a satisfying click with every keystroke, plus customizable RGB backlighting for a personalized setup.',
-    price: 129.99,
-    category: 'Electronics',
-    images: placeholderImages.filter(img => img.id.includes('mech-keyboard')),
-    reviews: [reviews[2]],
-  },
-  {
-    id: 'prod-4',
-    name: 'UltraWide 4K Monitor',
-    description: 'Immerse yourself in stunning detail with this 34-inch UltraWide 4K monitor. Perfect for multitasking and gaming, it delivers vibrant colors and crisp images from any angle.',
-    price: 799.99,
-    category: 'Electronics',
-    images: placeholderImages.filter(img => img.id.includes('4k-monitor')),
-    reviews: [reviews[0], reviews[1], reviews[3]],
-  },
-  {
-    id: 'prod-5',
-    name: 'Adjustable Laptop Stand',
-    description: 'Raise your laptop to a comfortable viewing height with this adjustable aluminum stand. It helps improve ergonomics and keeps your device cool with its open-air design.',
-    price: 39.99,
-    category: 'Office',
-    images: placeholderImages.filter(img => img.id.includes('laptop-stand')),
-    reviews: [reviews[4]],
-  },
-  {
-    id: 'prod-6',
-    name: 'Minimalist LED Desk Lamp',
-    description: 'Illuminate your workspace with this minimalist LED desk lamp. It offers adjustable brightness levels and color temperatures, all controlled by a simple touch interface.',
-    price: 59.99,
-    category: 'Lighting',
-    images: placeholderImages.filter(img => img.id.includes('desk-lamp')),
-    reviews: [reviews[0], reviews[4]],
-  },
-  {
-    id: 'prod-7',
-    name: 'Electric Standing Desk',
-    description: 'Switch between sitting and standing effortlessly with our electric standing desk. With a quiet motor and programmable height presets, it\'s the centerpiece of a healthy and productive workspace.',
-    price: 499.99,
-    category: 'Office',
-    images: placeholderImages.filter(img => img.id.includes('standing-desk')),
-    reviews: [reviews[2], reviews[3]],
-  },
-  {
-    id: 'prod-8',
-    name: 'Multi-Port USB-C Hub',
-    description: 'Expand your connectivity with this all-in-one USB-C hub. It features ports for HDMI, USB-A, SD cards, and more, all in a compact and portable design.',
-    price: 69.99,
-    category: 'Electronics',
-    images: placeholderImages.filter(img => img.id.includes('usb-c-hub')),
-    reviews: [reviews[1]],
-  },
+  // Cigarros Sousa Cruz
+  { id: 'prod-1', name: 'DUNHILL', description: 'Maço de cigarros Dunhill.', price: 137.80, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-2', name: 'DUNHILL DOUBLE', description: 'Maço de cigarros Dunhill Double.', price: 136.80, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-3', name: 'DUNHILL RED', description: 'Maço de cigarros Dunhill Red.', price: 110.60, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-4', name: 'KENT AZUL', description: 'Maço de cigarros Kent Azul.', price: 112.90, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-5', name: 'KENT PRATA', description: 'Maço de cigarros Kent Prata.', price: 112.90, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-6', name: 'LUCKY STRIKE DOBLE ICE', description: 'Maço de cigarros Lucky Strike Doble Ice.', price: 121.20, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-7', name: 'LUCKY STRIKE VERMELHO', description: 'Maço de cigarros Lucky Strike Vermelho.', price: 73.80, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-8', name: 'MARLBORO RED BOX', description: 'Maço de cigarros Marlboro Red Box.', price: 85.90, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-9', name: 'MARLBORO RED MAÇO', description: 'Maço de cigarros Marlboro Red.', price: 75.90, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-10', name: 'ROTHMANS AZUL', description: 'Maço de cigarros Rothmans Azul.', price: 89.30, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-11', name: 'ROTHMANS PRATA', description: 'Maço de cigarros Rothmans Prata.', price: 89.30, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-12', name: 'ROTHMANS VERMELHO', description: 'Maço de cigarros Rothmans Vermelho.', price: 89.30, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-13', name: 'ROTHMANS GLOBAL AZUL', description: 'Maço de cigarros Rothmans Global Azul.', price: 72.80, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-14', name: 'ROTHMANS GLOBAL VERMELHO', description: 'Maço de cigarros Rothmans Global Vermelho.', price: 72.80, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-15', name: 'ROTHMANS MELANCIA', description: 'Maço de cigarros Rothmans Melancia.', price: 108.30, category: 'Cigarros Sousa Cruz' },
+  { id: 'prod-16', name: 'ROTHMANS INTERNACIONAL', description: 'Maço de cigarros Rothmans Internacional.', price: 104.25, category: 'Cigarros Sousa Cruz' },
+
+  // Cigarros Nacional
+  { id: 'prod-17', name: 'G BRANCO', description: 'Maço de cigarros G Branco.', price: 28.90, category: 'Cigarros Nacional' },
+  { id: 'prod-18', name: 'G VERMELHO', description: 'Maço de cigarros G Vermelho.', price: 28.90, category: 'Cigarros Nacional' },
+  { id: 'prod-19', name: 'PANDORA BRANCO', description: 'Maço de cigarros Pandora Branco.', price: 28.90, category: 'Cigarros Nacional' },
+  { id: 'prod-20', name: 'PANDORA VERMELHO', description: 'Maço de cigarros Pandora Vermelho.', price: 28.90, category: 'Cigarros Nacional' },
+  { id: 'prod-21', name: 'NISE VERMELHO', description: 'Maço de cigarros Nise Vermelho.', price: 28.90, category: 'Cigarros Nacional' },
+  { id: 'prod-22', name: 'NISE BRANCO', description: 'Maço de cigarros Nise Branco.', price: 28.90, category: 'Cigarros Nacional' },
+  { id: 'prod-23', name: 'K-LINT SILVER', description: 'Maço de cigarros K-Lint Silver.', price: 0, category: 'Cigarros Nacional' }, // Price not provided
+  { id: 'prod-24', name: 'GUDANG GARAM (1 CART)', description: 'Cartão de cigarros Gudang Garam.', price: 0, category: 'Cigarros Nacional' }, // Price not provided
+
+  // Fumos
+  { id: 'prod-25', name: 'FUMO MELIÁ', description: 'Pacote de fumo Meliá.', price: 63.90, category: 'Fumos' },
+  { id: 'prod-26', name: 'FUMO TREVO', description: 'Pacote de fumo Trevo.', price: 81.90, category: 'Fumos' },
+
+  // Seda
+  { id: 'prod-27', name: 'SEDA ZOMO CHOCOLATE', description: 'Seda Zomo sabor Chocolate.', price: 29.90, category: 'Seda' },
+  { id: 'prod-28', name: 'SEDA ZOMO PINK', description: 'Seda Zomo Pink.', price: 27.90, category: 'Seda' },
+  { id: 'prod-29', name: 'SEDA ORGÂNICA', description: 'Seda Orgânica.', price: 25.90, category: 'Seda' },
+  { id: 'prod-30', name: 'SEDA BEM BOLADO', description: 'Seda Bem Bolado.', price: 89.90, category: 'Seda' },
+  { id: 'prod-31', name: 'PAPEL PARA CIGARRO TREVO CAIXA', description: 'Caixa de papel para cigarro Trevo.', price: 44.70, category: 'Seda' },
+
+  // Isqueiros
+  { id: 'prod-32', name: 'BIC', description: 'Isqueiro BIC.', price: 46.50, category: 'Isqueiros' },
+  { id: 'prod-33', name: 'CRICKET', description: 'Isqueiro Cricket.', price: 26.90, category: 'Isqueiros' },
+  { id: 'prod-34', name: 'GTI', description: 'Isqueiro GTI.', price: 20.70, category: 'Isqueiros' },
 ];

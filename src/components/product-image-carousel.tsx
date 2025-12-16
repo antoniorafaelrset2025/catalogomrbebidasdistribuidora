@@ -9,7 +9,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import type { ImagePlaceholder } from '@/lib/placeholder-images';
+
+type ImagePlaceholder = {
+  imageUrl: string;
+  imageHint: string;
+};
 
 type ProductImageCarouselProps = {
   images: ImagePlaceholder[];
@@ -17,6 +21,16 @@ type ProductImageCarouselProps = {
 };
 
 export default function ProductImageCarousel({ images, productName }: ProductImageCarouselProps) {
+    if (!images || images.length === 0) {
+    return (
+      <Card className="overflow-hidden">
+        <CardContent className="relative aspect-square flex items-center justify-center p-0 bg-muted">
+          <p className="text-muted-foreground">Sem imagem</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Carousel className="w-full" opts={{ loop: true }}>
       <CarouselContent>

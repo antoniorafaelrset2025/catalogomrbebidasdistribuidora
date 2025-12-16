@@ -1,47 +1,26 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import { products, categories as allCategories } from '@/lib/products';
+import { products } from '@/lib/products';
 import type { Product, Category } from '@/lib/types';
-import ProductListItem from '@/components/product-list-item';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Edit } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Search, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   
-  const categories = ["Todos os Produtos", "Cigarros Sousa Cruz", "Cigarros Nacional", "Fumos", "Sedas", "Isqueiros", "Long Necks", "Cervejas"];
-  const [selectedCategory, setSelectedCategory] = useState<string>('Todos os Produtos');
+  const categories = ["Todos", "Cigarros Sousa Cruz", "Cigarros Nacional", "Fumos", "Seda", "Isqueiros"];
+  const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const productCategory = product.category;
-      
-      let matchesCategory = false;
-      if (selectedCategory === 'Todos os Produtos') {
-        matchesCategory = true;
-      } else if (selectedCategory === 'Cigarros Sousa Cruz' && productCategory === 'Electronics') {
-        matchesCategory = true;
-      } else if (selectedCategory === 'Cigarros Nacional' && productCategory === 'Office') {
-        matchesCategory = true;
-      } else if (selectedCategory === 'Fumos' && productCategory === 'Lighting') {
-        matchesCategory = true;
-      }
-      else if (selectedCategory === 'Sedas' && product.name.toLowerCase().includes('stand')) {
-          matchesCategory = true;
-      } else if (selectedCategory === 'Isqueiros' && product.name.toLowerCase().includes('lamp')) {
-          matchesCategory = true;
-      } else if (selectedCategory === 'Long Necks' && product.name.toLowerCase().includes('desk')) {
-          matchesCategory = true;
-      } else if (selectedCategory === 'Cervejas' && product.name.toLowerCase().includes('hub')) {
-          matchesCategory = true;
-      }
-
+      const matchesCategory = selectedCategory === 'Todos' || product.category === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -89,10 +68,6 @@ export default function Home() {
                     className="pl-10 bg-background"
                   />
                 </div>
-                <Button variant="outline">
-                    <Edit className="mr-2 h-4 w-4" />
-                    Editar
-                </Button>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
                 {categories.map((category) => (
@@ -113,7 +88,27 @@ export default function Home() {
           {filteredProducts.length > 0 ? (
             <div className="space-y-4">
               {filteredProducts.map((product) => (
-                <ProductListItem key={product.id} product={product} />
+                <Card key={product.id} className="transition-all duration-300 border hover:shadow-lg hover:border-primary">
+                  <CardHeader>
+                    <div className="flex justify-between items-center gap-4">
+                      <div className="flex-1">
+                        <CardTitle>
+                          <Link
+                            href={`/products/${product.id}`}
+                            className="hover:underline"
+                          >
+                            {product.name}
+                          </Link>
+                        </CardTitle>
+                      </div>
+                      <div className="text-right flex items-center gap-4">
+                        <p className="text-xl font-bold whitespace-nowrap">
+                          {product.price > 0 ? `R$${product.price.toFixed(2)}` : 'Consulte'}
+                        </p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
               ))}
             </div>
           ) : (

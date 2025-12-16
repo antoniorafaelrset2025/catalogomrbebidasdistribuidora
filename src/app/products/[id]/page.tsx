@@ -2,9 +2,6 @@ import { notFound } from 'next/navigation';
 import { products } from '@/lib/products';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import ProductImageCarousel from '@/components/product-image-carousel';
-import ProductReviews from '@/components/product-reviews';
-import SimilarProducts from '@/components/similar-products';
 import { ShoppingCart } from 'lucide-react';
 
 type ProductPageProps = {
@@ -29,9 +26,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          <ProductImageCarousel images={product.images} productName={product.name} />
-
+        <div className="max-w-2xl mx-auto">
           <div className="space-y-6">
             <div>
               <p className="text-sm font-medium text-accent-foreground bg-accent/80 inline-block px-3 py-1 rounded-full mb-2">
@@ -42,12 +37,14 @@ export default function ProductPage({ params }: ProductPageProps) {
               </h1>
             </div>
 
-            <p className="text-3xl font-semibold">${product.price.toFixed(2)}</p>
+            <p className="text-3xl font-semibold">
+                {product.price > 0 ? `R$${product.price.toFixed(2)}` : 'Preço sob consulta'}
+            </p>
 
             <Separator />
 
             <div className="space-y-3">
-              <h2 className="text-xl font-semibold">Description</h2>
+              <h2 className="text-xl font-semibold">Descrição</h2>
               <p className="text-muted-foreground leading-relaxed">
                 {product.description}
               </p>
@@ -55,21 +52,10 @@ export default function ProductPage({ params }: ProductPageProps) {
 
             <Button size="lg" className="w-full text-lg py-7">
               <ShoppingCart className="mr-2 h-5 w-5" />
-              Add to Cart
+              Adicionar ao Carrinho
             </Button>
           </div>
         </div>
-
-        <Separator className="my-16" />
-
-        <ProductReviews reviews={product.reviews} />
-
-        <Separator className="my-16" />
-
-        <SimilarProducts
-          currentProductId={product.id}
-          category={product.category}
-        />
       </div>
     </div>
   );
