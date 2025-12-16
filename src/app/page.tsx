@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Product, Category, SiteInfo } from '@/lib/types';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -73,6 +73,22 @@ export default function Home() {
     'ENERGÉTICOS',
   ];
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  
+  // One-time fix for swapped phone numbers in Firestore
+  useEffect(() => {
+    if (siteInfoRef && siteInfo.heroPhone === '5585992234683') {
+      console.log('Swapped phone numbers detected in Firestore. Applying fix...');
+      updateDoc(siteInfoRef, {
+        heroPhone: '5585994125603',
+        heroPhoneDisplay: '(85) 99412-5603',
+        heroPhone2: '5585992234683',
+        heroPhoneDisplay2: '(85) 99223-4683',
+      }).then(() => {
+        console.log('Phone numbers corrected in Firestore.');
+        refreshSiteInfo();
+      }).catch(console.error);
+    }
+  }, [siteInfo, siteInfoRef, refreshSiteInfo]);
 
   const filteredProducts = useMemo(() => {
     if (!products) return [];
@@ -189,7 +205,7 @@ export default function Home() {
     const isEditing = editingField === field && user;
 
     return (
-      <div className={`group relative ${isEditing ? 'flex items-center gap-2' : 'flex justify-center'}`}>
+      <div className={`group relative w-full ${isEditing ? 'flex items-center gap-2' : 'flex justify-center'}`}>
         {isEditing ? (
           <>
             <Input
@@ -249,43 +265,43 @@ export default function Home() {
             />
           </div>
           <div className="flex flex-col items-center">
-             <div className="w-full max-w-full">
-               {renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}
+            <div className="w-full">
+              {renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}
             </div>
-             <div className="w-full max-w-full">
+            <div className="w-full">
               {renderEditableField('heroTitle2', siteInfo.heroTitle2, 'text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground')}
             </div>
           </div>
 
           <div className="mt-4 mx-auto w-fit max-w-full px-4">
-            <div className="grid grid-cols-2 gap-x-2 sm:gap-x-4">
+            <div className="grid grid-cols-[auto,1fr] gap-x-4 sm:gap-x-6">
 
+              {/* Fortaleza */}
               <div className="flex items-center gap-2 group justify-self-start">
                   {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                     <>
                       <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       {editingField === 'heroLocation' && user ? (
                         <div className="flex items-center gap-1">
-                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1">
-                          <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
+                          <p className="text-xs sm:text-sm font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
                           {user && <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                         </div>
                       )}
                     </>
                   )}
               </div>
-              
               <div className="flex items-center gap-2 group justify-self-end">
                 {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
                   <>
                     {editingField === 'heroPhoneDisplay' && user ? (
                        <div className="flex items-center gap-1">
-                        <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                        <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                         <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                         <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                       </div>
@@ -293,7 +309,7 @@ export default function Home() {
                        <div className="flex items-center gap-1">
                         <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                           <WhatsappIcon />
-                          <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
+                          <p className="text-xs sm:text-sm font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
                         </a>
                         {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                       </div>
@@ -302,32 +318,32 @@ export default function Home() {
                 )}
               </div>
 
+              {/* Cumbuco */}
               <div className="flex items-center gap-2 group justify-self-start">
                   {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                      <>
                       <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       {editingField === 'heroLocation2' && user ? (
                         <div className="flex items-center gap-1">
-                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1">
-                          <p className="text-sm sm:text-base font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
+                          <p className="text-xs sm:text-sm font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
                           {user && <Button onClick={() => handleStartEditingField('heroLocation2', siteInfo.heroLocation2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                         </div>
                       )}
                     </>
                   )}
               </div>
-
               <div className="flex items-center gap-2 group justify-self-end">
                   {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
                      <>
                       {editingField === 'heroPhoneDisplay2' && user ? (
                          <div className="flex items-center gap-1">
-                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-sm sm:text-base text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
+                          <Input type="text" value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="text-xs sm:text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed w-full" />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8 flex-shrink-0"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0"><X className="w-4 h-4" /></Button>
                         </div>
@@ -335,7 +351,7 @@ export default function Home() {
                          <div className="flex items-center gap-1">
                           <a href={`https://wa.me/${siteInfo.heroPhone2}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                             <WhatsappIcon />
-                            <p className="text-sm sm:text-base font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
+                            <p className="text-xs sm:text-sm font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
                           </a>
                           {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay2', siteInfo.heroPhoneDisplay2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                         </div>
@@ -348,7 +364,9 @@ export default function Home() {
 
 
           <div className="mt-6 max-w-2xl mx-auto">
-             <div className="text-lg text-muted-foreground p-1">{isLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : siteInfo.heroSlogan}</div>
+            <div className="text-lg text-muted-foreground p-1">
+              {isLoading ? <div className="h-6"><Skeleton className="h-6 w-full max-w-md mx-auto" /></div> : siteInfo.heroSlogan}
+            </div>
           </div>
         </div>
       </div>
@@ -416,10 +434,10 @@ export default function Home() {
                              type="text"
                              value={newName}
                              onChange={(e) => setNewName(e.target.value)}
-                             className="text-lg font-semibold leading-none tracking-tight h-auto"
+                             className="text-base font-semibold leading-none tracking-tight h-auto"
                            />
                         ) : (
-                          <CardTitle className="text-lg">{product.name}</CardTitle>
+                          <CardTitle className="text-base">{product.name}</CardTitle>
                         )}
                       </div>
                       <div className="text-right flex items-center gap-2">
