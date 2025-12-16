@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -29,6 +29,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
+      // Attempt to sign in first
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/');
       toast({
@@ -36,16 +37,35 @@ export default function LoginPage() {
         description: 'Você foi autenticado.',
       });
     } catch (error: any) {
-      console.error('Falha no login:', error);
-      let description = 'Ocorreu um erro desconhecido.';
-      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-        description = 'Credenciais inválidas. Verifique seu e-mail e senha.';
+      // If user not found, try to create a new account
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password);
+          router.push('/');
+          toast({
+            title: 'Cadastro realizado com sucesso!',
+            description: 'Sua conta foi criada e você já está logado.',
+          });
+        } catch (signUpError: any) {
+          console.error('Falha no cadastro:', signUpError);
+          toast({
+            variant: 'destructive',
+            title: 'Falha no cadastro',
+            description: signUpError.message || 'Não foi possível criar sua conta.',
+          });
+        }
+      } else {
+        console.error('Falha no login:', error);
+        let description = 'Ocorreu um erro desconhecido.';
+        if (error.code === 'auth/wrong-password') {
+          description = 'Senha incorreta. Verifique seus dados.';
+        }
+        toast({
+          variant: 'destructive',
+          title: 'Falha no login',
+          description,
+        });
       }
-      toast({
-        variant: 'destructive',
-        title: 'Falha no login',
-        description,
-      });
     } finally {
       setIsLoading(false);
     }
@@ -57,17 +77,18 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Entre com seu e-mail e senha para gerenciar os produtos.
+            Entre com seu usuário e senha para gerenciar os produtos. Se não
+            tiver uma conta, ela será criada automaticamente.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSignIn}>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Usuário (E-mail)</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="seunome@example.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
