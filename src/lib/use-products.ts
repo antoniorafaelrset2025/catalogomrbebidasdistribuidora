@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { collection, doc, writeBatch, getDocs, Firestore } from 'firebase/firestore';
 import { useFirestore, useUser } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -26,12 +26,8 @@ async function seedDatabase(firestore: Firestore) {
       
       await batch.commit();
       console.log('Database seeded successfully!');
-    } else {
-      console.log('Database already has products. Skipping seed.');
     }
   } catch (error) {
-    // If we get a permission error, it's likely because a non-authed user is trying to seed.
-    // We can suppress this client-side error as seeding is an admin-like task.
     if (error instanceof FirestorePermissionError || (error as any).code === 'permission-denied') {
         console.warn('Permission denied to check or seed database. This is expected for non-authenticated users.');
     } else {
@@ -43,9 +39,9 @@ async function seedDatabase(firestore: Firestore) {
 export function useProducts() {
   const firestore = useFirestore();
   const { user } = useUser();
+  const [initialLoading, setInitialLoading] = useState(true);
   
   useEffect(() => {
-    // Only attempt to seed if the user is authenticated.
     if (firestore && user) {
       seedDatabase(firestore);
     }
@@ -57,7 +53,16 @@ export function useProducts() {
   }, [firestore]);
 
 
-  const { data: products, isLoading, error } = useCollection<Product>(productsQuery);
+  const { data: firestoreProducts, isLoading: isFirestoreLoading, error } = useCollection<Product>(productsQuery);
+
+  useEffect(() => {
+    if(!isFirestoreLoading) {
+      setInitialLoading(false);
+    }
+  }, [isFirestoreLoading]);
+
+  const products = firestoreProducts && firestoreProducts.length > 0 ? firestoreProducts : staticProducts;
+  const isLoading = initialLoading && isFirestoreLoading;
 
   return { products, isLoading, error };
 }
