@@ -189,7 +189,7 @@ export default function Home() {
     const isEditing = editingField === field && user;
 
     return (
-      <div className={`group relative ${isEditing ? 'flex items-center gap-2' : ''}`}>
+      <div className={`group relative ${isEditing ? 'flex items-center gap-2' : 'flex justify-center'}`}>
         {isEditing ? (
           <>
             <Input
@@ -211,7 +211,7 @@ export default function Home() {
                 onClick={() => handleStartEditingField(field, value)} 
                 variant="ghost" 
                 size="icon" 
-                className="absolute -right-12 top-1/2 -translate-y-1/2 h-9 w-9 opacity-0 group-hover:opacity-100"
+                className="absolute -right-10 top-1/2 -translate-y-1/2 h-9 w-9 opacity-0 group-hover:opacity-100"
               >
                  <Edit className="w-5 h-5"/>
               </Button>
@@ -249,121 +249,113 @@ export default function Home() {
             />
           </div>
           <div className="flex flex-col items-center">
-            {isSiteInfoLoading ? <Skeleton className="h-16 w-1/2 mx-auto" /> : renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}
-            {isSiteInfoLoading ? <Skeleton className="h-14 w-3/4 mx-auto mt-2" /> : renderEditableField('heroTitle2', siteInfo.heroTitle2, 'text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground')}
+            {isSiteInfoLoading ? <Skeleton className="h-16 w-3/4 mx-auto" /> : renderEditableField('heroTitle1', siteInfo.heroTitle1, 'text-5xl font-black tracking-tighter sm:text-6xl md:text-7xl text-foreground')}
+            {isSiteInfoLoading ? <Skeleton className="h-14 w-full mx-auto mt-2" /> : renderEditableField('heroTitle2', siteInfo.heroTitle2, 'text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground')}
           </div>
 
           <div className="mt-4 flex flex-col items-center justify-center gap-y-2 gap-x-6 text-sm">
             {/* Branch 1 */}
-            <div className="flex items-center gap-x-4">
-              <div className="flex items-center gap-2 group">
-                <MapPin className="w-4 h-4 text-muted-foreground" />
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 group">
                 {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
-                    <>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
                       {editingField === 'heroLocation' && user ? (
-                        <div className="flex items-center gap-2">
+                        <>
                           <Input
                             type="text"
                             value={fieldValue}
                             onChange={(e) => setFieldValue(e.target.value)}
-                            className="text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed text-center"
+                            className="text-xs text-muted-foreground font-semibold h-auto p-0 border-dashed"
                           />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8"><X className="w-4 h-4" /></Button>
-                        </div>
+                        </>
                       ) : (
                         <>
-                          <p className="font-semibold text-muted-foreground">{siteInfo.heroLocation}</p>
+                          <p className="text-xs font-semibold text-muted-foreground">{siteInfo.heroLocation}</p>
                           {user && <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100"><Edit className="w-4 h-4"/></Button>}
                         </>
                       )}
-                    </>
+                  </div>
                 )}
-              </div>
-              <div className="flex items-center gap-2 group">
                 {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
-                    <>
+                  <div className="flex items-center gap-2">
                       {editingField === 'heroPhoneDisplay' && user ? (
-                        <div className="flex items-center gap-2">
+                        <>
                           <Input
                             type="text"
                             value={fieldValue}
                             onChange={(e) => setFieldValue(e.target.value)}
-                            className="text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed text-center"
+                            className="text-xs text-muted-foreground font-semibold h-auto p-0 border-dashed"
                           />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8"><X className="w-4 h-4" /></Button>
-                        </div>
+                        </>
                       ) : (
                         <>
                           <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                             <WhatsappIcon />
-                            <p className="font-semibold text-muted-foreground group-hover:underline">{siteInfo.heroPhoneDisplay}</p>
+                            <p className="text-xs font-semibold text-muted-foreground group-hover:underline">{siteInfo.heroPhoneDisplay}</p>
                           </a>
                           {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100"><Edit className="w-4 h-4"/></Button>}
                         </>
                       )}
-                    </>
+                  </div>
                 )}
-              </div>
             </div>
             {/* Branch 2 */}
-            <div className="flex items-center gap-x-4">
-              <div className="flex items-center gap-2 group">
-                <MapPin className="w-4 h-4 text-muted-foreground" />
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 group">
                 {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
-                    <>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
                       {editingField === 'heroLocation2' && user ? (
-                        <div className="flex items-center gap-2">
+                        <>
                           <Input
                             type="text"
                             value={fieldValue}
                             onChange={(e) => setFieldValue(e.target.value)}
-                            className="text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed text-center"
+                            className="text-xs text-muted-foreground font-semibold h-auto p-0 border-dashed"
                           />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8"><X className="w-4 h-4" /></Button>
-                        </div>
+                        </>
                       ) : (
                         <>
-                          <p className="font-semibold text-muted-foreground">{siteInfo.heroLocation2}</p>
+                          <p className="text-xs font-semibold text-muted-foreground">{siteInfo.heroLocation2}</p>
                           {user && <Button onClick={() => handleStartEditingField('heroLocation2', siteInfo.heroLocation2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100"><Edit className="w-4 h-4"/></Button>}
                         </>
                       )}
-                    </>
+                  </div>
                 )}
-              </div>
-              <div className="flex items-center gap-2 group">
                 {isSiteInfoLoading ? <Skeleton className="h-5 w-32" /> : (
-                    <>
+                  <div className="flex items-center gap-2">
                       {editingField === 'heroPhoneDisplay2' && user ? (
-                        <div className="flex items-center gap-2">
+                        <>
                           <Input
                             type="text"
                             value={fieldValue}
                             onChange={(e) => setFieldValue(e.target.value)}
-                            className="text-sm text-muted-foreground font-semibold h-auto p-0 border-dashed text-center"
+                            className="text-xs text-muted-foreground font-semibold h-auto p-0 border-dashed"
                           />
                           <Button onClick={handleUpdateSiteInfo} size="icon" className="h-8 w-8"><Save className="w-4 h-4"/></Button>
                           <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-8 w-8"><X className="w-4 h-4" /></Button>
-                        </div>
+                        </>
                       ) : (
                         <>
                           <a href={`https://wa.me/${siteInfo.heroPhone2}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                             <WhatsappIcon />
-                            <p className="font-semibold text-muted-foreground group-hover:underline">{siteInfo.heroPhoneDisplay2}</p>
+                            <p className="text-xs font-semibold text-muted-foreground group-hover:underline">{siteInfo.heroPhoneDisplay2}</p>
                           </a>
                           {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay2', siteInfo.heroPhoneDisplay2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100"><Edit className="w-4 h-4"/></Button>}
                         </>
                       )}
-                    </>
+                  </div>
                 )}
-              </div>
             </div>
           </div>
 
           <div className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-             {isSiteInfoLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : <div className="p-1">{siteInfo.heroSlogan}</div>}
+             <div className="p-1">{isLoading ? <Skeleton className="h-6 w-full max-w-md mx-auto" /> : siteInfo.heroSlogan}</div>
           </div>
         </div>
       </div>
