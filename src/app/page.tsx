@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import type { Product, Category, SiteInfo } from '@/lib/types';
+import type { Product, SiteInfo } from '@/lib/types';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, MapPin, Edit, Save, X, Phone, PlusCircle, MoreVertical, Trash2 } from 'lucide-react';
 import { useProducts } from '@/lib/use-products';
 import { useSiteInfo } from '@/lib/use-site-info';
+import { useCategories } from '@/lib/use-categories';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +39,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const { products, isLoading: areProductsLoading, refreshProducts } = useProducts();
   const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef, refreshSiteInfo } = useSiteInfo();
+  const { categories, isLoading: areCategoriesLoading } = useCategories();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -50,29 +52,14 @@ export default function Home() {
   const [fieldValue, setFieldValue] = useState('');
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-
-  const isLoading = areProductsLoading || isSiteInfoLoading;
-
-  const categories: (Category | 'Todos')[] = [
-    'Todos',
-    'Cigarros Sousa Cruz',
-    'Cigarros Nacional',
-    'Fumos',
-    'Seda',
-    'Isqueiros',
-    'BEBIDAS',
-    'LONG NECKS',
-    'CERVEJAS LATAS',
-    'CACHAÇAS 1L',
-    'CACHAÇAS MEIOTAS',
-    'VODKAS',
-    'GIN',
-    'WHISKYS',
-    'DESTILADOS',
-    'VINHOS',
-    'ENERGÉTICOS',
-  ];
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+
+  const isLoading = areProductsLoading || isSiteInfoLoading || areCategoriesLoading;
+
+  const displayCategories = useMemo(() => {
+    if (!categories) return [];
+    return ['Todos', ...categories.map(c => c.name)];
+  }, [categories]);
   
   // One-time fix for swapped phone numbers in Firestore
   useEffect(() => {
@@ -281,7 +268,7 @@ export default function Home() {
           </div>
 
           <div className="mt-4 mx-auto max-w-md px-4">
-            <div className="grid grid-cols-[1fr,auto] gap-x-4 items-center">
+             <div className="grid grid-cols-[auto,1fr] gap-x-4 items-center">
                 {/* Coluna Esquerda - Cidades */}
                 <div className="space-y-2 justify-self-start text-left">
                     {/* Fortaleza */}
@@ -289,7 +276,7 @@ export default function Home() {
                         {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                <p className="text-base sm:text-lg font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
+                                <p className="text-sm sm:text-lg font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation}</p>
                                 {user && <Button onClick={() => handleStartEditingField('heroLocation', siteInfo.heroLocation)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
                         )}
@@ -299,7 +286,7 @@ export default function Home() {
                         {isSiteInfoLoading ? <Skeleton className="h-5 w-24" /> : (
                             <div className="flex items-center gap-1.5">
                                 <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                                <p className="text-base sm:text-lg font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
+                                <p className="text-sm sm:text-lg font-semibold text-muted-foreground whitespace-nowrap">{siteInfo.heroLocation2}</p>
                                 {user && <Button onClick={() => handleStartEditingField('heroLocation2', siteInfo.heroLocation2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
                         )}
@@ -314,7 +301,7 @@ export default function Home() {
                             <div className="flex items-center gap-1.5">
                               <a href={`https://wa.me/${siteInfo.heroPhone}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                                 <WhatsappIcon />
-                                <p className="text-base sm:text-lg font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
+                                <p className="text-sm sm:text-lg font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay}</p>
                               </a>
                               {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay', siteInfo.heroPhoneDisplay)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
@@ -326,7 +313,7 @@ export default function Home() {
                             <div className="flex items-center gap-1.5">
                               <a href={`https://wa.me/${siteInfo.heroPhone2}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group">
                                 <WhatsappIcon />
-                                <p className="text-base sm:text-lg font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
+                                <p className="text-sm sm:text-lg font-semibold text-muted-foreground group-hover:underline whitespace-nowrap">{siteInfo.heroPhoneDisplay2}</p>
                               </a>
                               {user && <Button onClick={() => handleStartEditingField('heroPhoneDisplay2', siteInfo.heroPhoneDisplay2)} variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 flex-shrink-0"><Edit className="w-4 h-4"/></Button>}
                             </div>
@@ -367,17 +354,21 @@ export default function Home() {
             )}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? 'default' : 'secondary'}
-                onClick={() => setSelectedCategory(category)}
-                size="sm"
-                className="rounded-full"
-              >
-                {category}
-              </Button>
-            ))}
+            {areCategoriesLoading ? (
+              [...Array(5)].map((_, i) => <Skeleton key={i} className="h-8 w-24 rounded-full" />)
+            ) : (
+              displayCategories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? 'default' : 'secondary'}
+                  onClick={() => setSelectedCategory(category)}
+                  size="sm"
+                  className="rounded-full"
+                >
+                  {category}
+                </Button>
+              ))
+            )}
           </div>
         </div>
 
@@ -480,7 +471,6 @@ export default function Home() {
         <AddProductDialog
             isOpen={isAddProductOpen}
             onOpenChange={setIsAddProductOpen}
-            categories={categories.filter((c) => c !== 'Todos') as Category[]}
             onProductAdded={refreshProducts}
         />
       )}

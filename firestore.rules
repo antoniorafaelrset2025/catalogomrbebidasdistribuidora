@@ -102,10 +102,6 @@ service cloud.firestore {
      * @description Controls access to product documents. Products are public to read
      *              but can only be written to by any authenticated user.
      * @path /products/{productId}
-     * @allow (get) Any user, signed in or not, can read a product.
-     * @allow (create) A signed-in user can create a new product.
-     * @deny (create) An unauthenticated user cannot create a new product.
-     * @principle Implements a "Public Read, Authenticated Write" pattern.
      */
     match /products/{productId} {
       allow get, list: if true;
@@ -118,11 +114,6 @@ service cloud.firestore {
      * @description Controls access to user profile documents. A user can only access
      *              their own document.
      * @path /users/{userId}
-     * @allow (create) A new user can create their own user document.
-     * @allow (get) An authenticated user can read their own user document.
-     * @deny (get) A user cannot read another user's document.
-     * @deny (list) No user can list all documents in the 'users' collection.
-     * @principle Restricts access to a user's own data tree for privacy.
      */
     match /users/{userId} {
       allow get: if isOwner(userId);
@@ -135,10 +126,18 @@ service cloud.firestore {
      /**
      * @description Controls access to the site information document.
      * @path /siteInfo/{docId}
-     * @allow (get, list) Anyone can read the site information.
-     * @allow (create, update, delete) Only authenticated users can modify site info.
      */
     match /siteInfo/{docId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+    
+    /**
+     * @description Controls access to the categories collection. Categories are public to read
+     *              but can only be written to by any authenticated user.
+     * @path /categories/{categoryId}
+     */
+    match /categories/{categoryId} {
       allow get, list: if true;
       allow create, update, delete: if isSignedIn();
     }

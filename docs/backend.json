@@ -115,6 +115,19 @@
           "description": "The second formatted phone number to display on the page."
         }
       }
+    },
+    "Category": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Category",
+      "type": "object",
+      "description": "Represents a product category.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the category."
+        }
+      },
+      "required": ["name"]
     }
   },
   "auth": {
@@ -132,7 +145,7 @@
           "schema": {
             "$ref": "#/backend/entities/Product"
           },
-          "description": "Stores product details.  No denormalized authorization fields are needed as price editing is based on authentication.",
+          "description": "Stores product details. No denormalized authorization fields are needed as price editing is based on authentication.",
           "params": [
             {
               "name": "productId",
@@ -169,6 +182,22 @@
             {
               "name": "docId",
               "description": "The unique identifier for the site info document."
+            }
+          ]
+        }
+      },
+      {
+        "path": "categories/{categoryId}",
+        "definition": {
+          "entityName": "Category",
+          "schema": {
+            "$ref": "#/backend/entities/Category"
+          },
+          "description": "Stores product categories.",
+          "params": [
+            {
+              "name": "categoryId",
+              "description": "The unique identifier for the category."
             }
           ]
         }

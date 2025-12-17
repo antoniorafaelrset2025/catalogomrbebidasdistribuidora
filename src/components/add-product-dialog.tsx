@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useCategories } from '@/lib/use-categories';
 import { collection, addDoc } from 'firebase/firestore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,7 +33,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import type { Category, NewProduct } from '@/lib/types';
+import type { NewProduct } from '@/lib/types';
+import { Skeleton } from './ui/skeleton';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Nome do produto é obrigatório.'),
@@ -43,17 +45,16 @@ const formSchema = z.object({
 type AddProductDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  categories: Category[];
   onProductAdded: () => void;
 };
 
 export function AddProductDialog({
   isOpen,
   onOpenChange,
-  categories,
   onProductAdded,
 }: AddProductDialogProps) {
   const firestore = useFirestore();
+  const { categories, isLoading: areCategoriesLoading } = useCategories();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -74,7 +75,7 @@ export function AddProductDialog({
       const newProduct: NewProduct = {
         name: values.name,
         price: values.price,
-        category: values.category as Category,
+        category: values.category,
         description: '', // Default empty description
       };
 
@@ -159,18 +160,22 @@ export function AddProductDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
-                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
-                        <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecione uma categoria" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            {categories.map((category) => (
-                                <SelectItem key={category} value={category}>{category}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    {areCategoriesLoading ? (
+                        <Skeleton className="h-10 w-full" />
+                    ) : (
+                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecione uma categoria" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {categories?.map((category) => (
+                                    <SelectItem key={category.id} value={category.name}>{category.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                   <FormMessage />
                 </FormItem>
               )}

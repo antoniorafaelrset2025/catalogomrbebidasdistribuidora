@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { LogIn, LogOut, User as UserIcon, KeyRound, Edit, Save, X } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, KeyRound, Edit, Save, X, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -150,10 +150,17 @@ export default function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                   <DropdownMenuItem asChild>
+                    <Link href="/admin/categories">
+                      <LayoutGrid className="mr-2 h-4 w-4" />
+                      <span>Gerenciar Categorias</span>
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => setIsChangePasswordOpen(true)}>
                     <KeyRound className="mr-2 h-4 w-4" />
                     <span>Alterar Senha</span>
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Sair</span>
