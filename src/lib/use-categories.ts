@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -6,7 +7,7 @@ import { useFirestore } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import type { Category } from '@/lib/types';
 import { useMemoFirebase } from '@/firebase/provider';
-import { categories as staticCategories } from '@/lib/products'; // Use the same initial list
+import { categories as staticCategories } from '@/lib/products'; 
 
 let seedingChecked = false;
 
@@ -66,3 +67,5 @@ export function useCategories() {
   
   return { categories, isLoading, error, refreshCategories };
 }
+
+    
