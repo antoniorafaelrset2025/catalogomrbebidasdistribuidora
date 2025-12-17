@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { LogIn, LogOut, User as UserIcon, KeyRound, Edit, Save, X, LayoutGrid } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, KeyRound, Edit, Save, X, LayoutGrid, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser, useAuth, useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -79,6 +79,33 @@ export default function Header() {
     setNewSiteName('');
   }
 
+  const handleShare = async () => {
+    const shareData = {
+      title: siteInfo.siteName,
+      text: `Confira o catálogo da ${siteInfo.siteName}!`,
+      url: window.location.origin,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        if ((error as DOMException)?.name !== 'AbortError') {
+          console.error('Erro ao compartilhar:', error);
+          toast({ variant: 'destructive', title: 'Erro ao compartilhar', description: 'Não foi possível compartilhar a página.' });
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({ title: 'Link copiado!', description: 'O link da página foi copiado para sua área de transferência.' });
+      } catch (err) {
+        console.error('Falha ao copiar o link:', err);
+        toast({ variant: 'destructive', title: 'Erro ao copiar', description: 'Não foi possível copiar o link.' });
+      }
+    }
+  };
+
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -118,6 +145,10 @@ export default function Header() {
               )}
           </Link>
           <div className="flex items-center gap-2 ml-auto">
+             <Button variant="outline" size="icon" onClick={handleShare}>
+                <Share2 className="h-5 w-5" />
+                <span className="sr-only">Compartilhar Página</span>
+            </Button>
             {isUserLoading ? (
               <div className="w-10 h-10 bg-muted rounded-full animate-pulse" />
             ) : user ? (
