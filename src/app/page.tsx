@@ -58,7 +58,11 @@ export default function Home() {
 
   const displayCategories = useMemo(() => {
     if (!categories) return [];
-    return ['Todos', ...categories.map(c => c.name)];
+    // Sort categories alphabetically using localeCompare for correct accent handling
+    const sortedCategories = [...categories].sort((a, b) => 
+      a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
+    );
+    return ['Todos', ...sortedCategories.map(c => c.name)];
   }, [categories]);
   
   // One-time fix for swapped phone numbers in Firestore
