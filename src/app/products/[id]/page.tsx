@@ -6,7 +6,7 @@ import { useDoc, useFirestore, useUser, errorEmitter, FirestorePermissionError }
 import { doc, updateDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, Edit, Save, X } from 'lucide-react';
+import { ShoppingCart, Edit, Save, X, Share2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Product } from '@/lib/types';
 import { Input } from '@/components/ui/input';
@@ -94,28 +94,60 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
     }
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.name,
+          text: `Confira este produto: ${product.name}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        // Não mostrar erro se o usuário cancelar o compartilhamento
+        if ((error as DOMException)?.name !== 'AbortError') {
+          console.error('Erro ao compartilhar:', error);
+          toast({ variant: 'destructive', title: 'Erro ao compartilhar', description: 'Não foi possível compartilhar o produto.' });
+        }
+      }
+    } else {
+      // Fallback: copiar para a área de transferência
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({ title: 'Link copiado!', description: 'O link do produto foi copiado para sua área de transferência.' });
+      } catch (err) {
+        console.error('Falha ao copiar o link:', err);
+        toast({ variant: 'destructive', title: 'Erro ao copiar', description: 'Não foi possível copiar o link.' });
+      }
+    }
+  };
 
   return (
     <div className="bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-2xl mx-auto">
           <div className="space-y-6">
-            <div>
-              <p className="text-sm font-medium text-accent-foreground bg-accent/80 inline-block px-3 py-1 rounded-full mb-2">
-                {product.category}
-              </p>
-              {isEditing && user ? (
-                <Input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="text-4xl font-bold tracking-tight font-headline sm:text-5xl h-auto"
-                />
-              ) : (
-                <h1 className="text-4xl font-bold tracking-tight font-headline sm:text-5xl">
-                  {product.name}
-                </h1>
-              )}
+            <div className="flex justify-between items-start gap-4">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-accent-foreground bg-accent/80 inline-block px-3 py-1 rounded-full mb-2">
+                  {product.category}
+                </p>
+                {isEditing && user ? (
+                  <Input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="text-4xl font-bold tracking-tight font-headline sm:text-5xl h-auto"
+                  />
+                ) : (
+                  <h1 className="text-4xl font-bold tracking-tight font-headline sm:text-5xl">
+                    {product.name}
+                  </h1>
+                )}
+              </div>
+               <Button onClick={handleShare} variant="outline" size="icon" className="shrink-0 mt-1">
+                <Share2 className="w-5 h-5"/>
+                <span className="sr-only">Compartilhar</span>
+              </Button>
             </div>
 
             <div className="flex items-center gap-4">
