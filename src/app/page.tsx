@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import type { Product, SiteInfo } from '@/lib/types';
+import type { Product, SiteInfo, Category } from '@/lib/types';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 
 type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation' | 'heroPhoneDisplay' | 'heroLocation2' | 'heroPhoneDisplay2';
@@ -47,6 +54,7 @@ export default function Home() {
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [newPrice, setNewPrice] = useState<number | string>('');
   const [newName, setNewName] = useState<string>('');
+  const [newCategory, setNewCategory] = useState<string>('');
   
   const [editingField, setEditingField] = useState<EditableField | null>(null);
   const [fieldValue, setFieldValue] = useState('');
@@ -188,6 +196,7 @@ export default function Home() {
     setEditingProductId(product.id);
     setNewPrice(product.price > 0 ? product.price : '');
     setNewName(product.name);
+    setNewCategory(product.category);
   };
   
   const handleStartEditingField = (field: EditableField, currentValue: string) => {
@@ -199,6 +208,7 @@ export default function Home() {
     setEditingProductId(null);
     setNewPrice('');
     setNewName('');
+    setNewCategory('');
     setEditingField(null);
     setFieldValue('');
   };
@@ -395,8 +405,8 @@ export default function Home() {
                   key={product.id}
                   className="transition-all duration-300 border hover:shadow-lg hover:border-primary"
                 >
-                  <CardHeader>
-                    <div className="flex justify-between items-start gap-4">
+                  <CardHeader className="p-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                       <div className="flex-1">
                         {editingProductId === product.id && user ? (
                            <Input
@@ -408,8 +418,28 @@ export default function Home() {
                         ) : (
                           <CardTitle className="text-md font-semibold">{product.name}</CardTitle>
                         )}
+                        {editingProductId === product.id && user ? (
+                            <div className="mt-2">
+                                {areCategoriesLoading ? (
+                                    <Skeleton className="h-10 w-full" />
+                                ) : (
+                                    <Select value={newCategory} onValueChange={setNewCategory}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Selecione uma categoria" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {categories?.map((cat: Category) => (
+                                                <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-muted-foreground mt-1">{product.category}</p>
+                        )}
                       </div>
-                      <div className="text-right flex items-center gap-2">
+                      <div className="text-right flex items-center gap-2 self-start sm:self-center">
                          {editingProductId === product.id && user ? (
                             <div className="flex items-center gap-2">
                                <Input 
@@ -419,7 +449,7 @@ export default function Home() {
                                 className="w-32 text-base"
                                 placeholder={product.price > 0 ? product.price.toFixed(2) : '0.00'}
                               />
-                              <Button onClick={() => handleUpdateProduct(product.id, { name: newName, price: Number(newPrice) })} size="icon" className="h-9 w-9"><Save /></Button>
+                              <Button onClick={() => handleUpdateProduct(product.id, { name: newName, price: Number(newPrice), category: newCategory })} size="icon" className="h-9 w-9"><Save /></Button>
                               <Button onClick={handleCancelEditing} variant="ghost" size="icon" className="h-9 w-9">
                                 <X className="w-5 h-5" />
                               </Button>
@@ -428,7 +458,7 @@ export default function Home() {
                           <>
                             <p className="text-xl font-bold whitespace-nowrap">
                               {product.price > 0
-                                ? `R$${product.price.toFixed(2)}`
+                                ? `R$${product.price.toFixed(2).replace('.', ',')}`
                                 : 'Consulte'}
                             </p>
                             {user && (

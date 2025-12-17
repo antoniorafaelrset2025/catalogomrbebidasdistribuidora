@@ -8,10 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ShoppingCart, Edit, Save, X, Share2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Product } from '@/lib/types';
+import type { Product, Category } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useMemoFirebase } from '@/firebase/provider';
+import { useCategories } from '@/lib/use-categories';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type ProductPageProps = {
   params: Promise<{
@@ -24,17 +32,19 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
   const firestore = useFirestore();
   const { user } = useUser();
   const { toast } = useToast();
+  const { categories, isLoading: areCategoriesLoading } = useCategories();
 
   const [isEditing, setIsEditing] = useState(false);
   const [newPrice, setNewPrice] = useState<number | string>('');
   const [newName, setNewName] = useState<string>('');
+  const [newCategory, setNewCategory] = useState<string>('');
 
   const productRef = useMemoFirebase(() => {
     if (!firestore || !params.id) return null;
     return doc(firestore, 'products', params.id);
   }, [firestore, params.id]);
 
-  const { data: product, isLoading } = useDoc<Product>(productRef);
+  const { data: product, isLoading, refresh: refreshProduct } = useDoc<Product>(productRef);
 
   if (isLoading) {
     return (
@@ -73,8 +83,17 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
       });
       return;
     }
+    if (!newCategory) {
+      toast({
+        variant: 'destructive',
+        title: 'Categoria inválida',
+        description: 'Por favor, selecione uma categoria.',
+      });
+      return;
+    }
+
     if (productRef) {
-      const updatedData = { price: newPrice, name: newName };
+      const updatedData = { price: newPrice, name: newName, category: newCategory };
       updateDoc(productRef, updatedData)
         .then(() => {
           toast({
@@ -82,6 +101,7 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
             description: 'O produto foi atualizado.',
           });
           setIsEditing(false);
+          refreshProduct();
         })
         .catch(() => {
             const permissionError = new FirestorePermissionError({
@@ -127,10 +147,28 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
         <div className="max-w-2xl mx-auto">
           <div className="space-y-6">
             <div className="flex justify-between items-start gap-4">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-accent-foreground bg-accent/80 inline-block px-3 py-1 rounded-full mb-2">
-                  {product.category}
-                </p>
+              <div className="flex-1 space-y-2">
+                 {isEditing && user ? (
+                    areCategoriesLoading ? (
+                        <Skeleton className="h-10 w-full max-w-xs" />
+                    ) : (
+                        <Select value={newCategory} onValueChange={setNewCategory}>
+                            <SelectTrigger className="w-full max-w-xs">
+                                <SelectValue placeholder="Selecione uma categoria" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {categories?.map((cat: Category) => (
+                                    <SelectItem key={cat.id} value={cat.name}>{cat.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )
+                 ) : (
+                    <p className="text-sm font-medium text-accent-foreground bg-accent/80 inline-block px-3 py-1 rounded-full">
+                      {product.category}
+                    </p>
+                 )}
+                
                 {isEditing && user ? (
                   <Input
                     type="text"
@@ -168,7 +206,7 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
               ) : (
                 <p className="text-3xl font-semibold">
                   {product.price > 0
-                    ? `R$${product.price.toFixed(2)}`
+                    ? `R$${product.price.toFixed(2).replace('.', ',')}`
                     : 'Consulte'}
                 </p>
               )}
@@ -177,6 +215,7 @@ export default function ProductPage({ params: paramsPromise }: ProductPageProps)
                   setIsEditing(true);
                   setNewPrice(product.price > 0 ? product.price : '');
                   setNewName(product.name);
+                  setNewCategory(product.category);
                 }} variant="outline" size="icon">
                   <Edit className="w-5 h-5"/>
                 </Button>
