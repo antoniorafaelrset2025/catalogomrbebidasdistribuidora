@@ -7,9 +7,28 @@ import { useFirestore } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import type { Category } from '@/lib/types';
 import { useMemoFirebase } from '@/firebase/provider';
-import { categories as staticCategories } from '@/lib/products'; 
 
 let seedingChecked = false;
+
+// Esta lista estática é para o preenchimento inicial do banco de dados.
+const initialCategories = [
+  'BEBIDAS',
+  'CACHAÇAS 1L',
+  'CACHAÇAS MEIOTAS',
+  'CERVEJAS LATAS',
+  'Cigarros Nacional',
+  'Cigarros Sousa Cruz',
+  'DESTILADOS',
+  'ENERGÉTICOS',
+  'Fumos',
+  'GIN',
+  'Isqueiros',
+  'LONG NECKS',
+  'Seda',
+  'VINHOS',
+  'VODKAS',
+  'WHISKYS',
+];
 
 async function seedDatabaseIfEmpty(firestore: Firestore) {
   if (seedingChecked) {
@@ -23,7 +42,11 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
     if (snapshot.empty) {
         console.log('Categories collection is empty. Seeding database...');
         const batch = writeBatch(firestore);
-        staticCategories.forEach((categoryName) => {
+        
+        // Use a Set to ensure all category names are unique before seeding.
+        const uniqueCategories = [...new Set(initialCategories)];
+
+        uniqueCategories.forEach((categoryName) => {
             const docRef = doc(categoriesCollectionRef); // Auto-generate ID
             batch.set(docRef, { name: categoryName });
         });

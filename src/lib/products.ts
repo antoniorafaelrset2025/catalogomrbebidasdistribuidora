@@ -1,23 +1,8 @@
 
 import type { Product, Category } from './types';
 
-export const categories: Category[] = [
-  'BEBIDAS', // Adicionando a categoria que faltava
-  'CACHAÇAS 1L',
-  'CACHAÇAS MEIOTAS',
-  'CERVEJAS LATAS',
-  'Cigarros Nacional',
-  'Cigarros Sousa Cruz',
-  'DESTILADOS',
-  'ENERGÉTICOS',
-  'Fumos',
-  'GIN',
-  'Isqueiros',
-  'LONG NECKS',
-  'Seda',
-  'VINHOS',
-  'WHISKYS',
-];
+// A lista estática de categorias foi removida para evitar duplicatas,
+// já que as categorias agora são carregadas dinamicamente do Firestore.
 
 export const products: Product[] = [
   // Cigarros Sousa Cruz
@@ -201,7 +186,7 @@ export const products: Product[] = [
   { id: 'prod-154', name: 'TEQUILA TEQPAR', description: 'Garrafa de Tequila Teqpar.', price: 21.90, category: 'DESTILADOS' },
   { id: 'prod-155', name: 'MARTINI ROSSO', description: 'Garrafa de Martini Rosso.', price: 35.40, category: 'DESTILADOS' },
   { id: 'prod-156', name: 'BALLENA MORANGO', description: 'Garrafa de Licor Ballena Morango.', price: 118.90, category: 'DESTILADOS' },
-  { id: 'prod-157', name: 'BALLENA CHOCOLATE', description: 'Garrafa de Licor Ballena Chocolate.', price: 119.90, category: 'DESTILados' }, // Corrigido para DESTILADOS
+  { id: 'prod-157', name: 'BALLENA CHOCOLATE', description: 'Garrafa de Licor Ballena Chocolate.', price: 119.90, category: 'DESTILADOS' }, // Corrigido para DESTILADOS
   { id: 'prod-158', name: 'BALLENA COCO', description: 'Garrafa de Licor Ballena Coco.', price: 0, category: 'DESTILADOS' },
   { id: 'prod-159', name: 'LICOR 43', description: 'Garrafa de Licor 43.', price: 0, category: 'DESTILADOS' },
   { id: 'prod-160', name: 'XAROPE MONIN', description: 'Garrafa de Xarope Monin.', price: 55.90, category: 'DESTILADOS' },
