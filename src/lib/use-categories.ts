@@ -10,7 +10,7 @@ import { useMemoFirebase } from '@/firebase/provider';
 
 let seedingChecked = false;
 
-// Esta lista estática é para o preenchimento inicial do banco de dados.
+// Esta lista estática é para o preenchimento inicial do banco de dados, agora sem duplicatas.
 const initialCategories = [
   'BEBIDAS',
   'CACHAÇAS 1L',
@@ -43,10 +43,8 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
         console.log('Categories collection is empty. Seeding database...');
         const batch = writeBatch(firestore);
         
-        // Use a Set to ensure all category names are unique before seeding.
-        const uniqueCategories = [...new Set(initialCategories)];
-
-        uniqueCategories.forEach((categoryName) => {
+        // A lista agora é garantida como única.
+        initialCategories.forEach((categoryName) => {
             const docRef = doc(categoriesCollectionRef); // Auto-generate ID
             batch.set(docRef, { name: categoryName });
         });
@@ -90,5 +88,3 @@ export function useCategories() {
   
   return { categories, isLoading, error, refreshCategories };
 }
-
-    
