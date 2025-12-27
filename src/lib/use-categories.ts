@@ -7,28 +7,14 @@ import { useFirestore } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import type { Category } from '@/lib/types';
 import { useMemoFirebase } from '@/firebase/provider';
+import { products } from '@/lib/products';
 
 let seedingChecked = false;
 
-// A lista foi limpa para garantir que não haja nomes de categorias duplicados.
-const initialCategories = [
-  'BEBIDAS',
-  'CACHAÇAS 1L',
-  'CACHAÇAS MEIOTAS',
-  'CERVEJAS LATAS',
-  'Cigarros Nacional',
-  'Cigarros Sousa Cruz',
-  'DESTILADOS',
-  'ENERGÉTICOS',
-  'Fumos',
-  'GIN',
-  'Isqueiros',
-  'LONG NECKS',
-  'Seda',
-  'VINHOS',
-  'VODKAS',
-  'WHISKYS',
-];
+// Deriva as categorias diretamente da lista de produtos para garantir consistência
+// e usa um Set para garantir que a lista seja única.
+const initialCategories = [...new Set(products.map(p => p.category))];
+
 
 async function seedDatabaseIfEmpty(firestore: Firestore) {
   if (seedingChecked) {
@@ -43,10 +29,8 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
         console.log('Categories collection is empty. Seeding database...');
         const batch = writeBatch(firestore);
         
-        // Garante que a lista é única antes de popular o banco.
-        const uniqueCategories = [...new Set(initialCategories)];
-
-        uniqueCategories.forEach((categoryName) => {
+        // A lista initialCategories já é garantidamente única
+        initialCategories.forEach((categoryName) => {
             const docRef = doc(categoriesCollectionRef); // Auto-generate ID
             batch.set(docRef, { name: categoryName });
         });
