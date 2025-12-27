@@ -45,13 +45,11 @@ const formSchema = z.object({
 type AddProductDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onProductAdded: () => void;
 };
 
 export function AddProductDialog({
   isOpen,
   onOpenChange,
-  onProductAdded,
 }: AddProductDialogProps) {
   const firestore = useFirestore();
   const { categories, isLoading: areCategoriesLoading } = useCategories();
@@ -89,7 +87,6 @@ export function AddProductDialog({
             });
             form.reset();
             onOpenChange(false);
-            onProductAdded(); // Callback to refresh the product list
         }).catch((e) => {
             const permissionError = new FirestorePermissionError({
                 path: productsCollectionRef.path,

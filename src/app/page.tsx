@@ -44,7 +44,7 @@ type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation' |
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
-  const { products, isLoading: areProductsLoading, refreshProducts } = useProducts();
+  const { products, isLoading: areProductsLoading } = useProducts();
   const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef, refreshSiteInfo } = useSiteInfo();
   const { categories, isLoading: areCategoriesLoading } = useCategories();
   const { user } = useUser();
@@ -107,7 +107,9 @@ export default function Home() {
 
   const filteredProducts = useMemo(() => {
     if (!products) return [];
-    return products.filter((product) => {
+    const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }));
+
+    return sortedProducts.filter((product) => {
       const matchesSearch = product.name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
@@ -129,7 +131,6 @@ export default function Home() {
             description: 'O produto foi atualizado.',
           });
           setEditingProductId(null);
-          refreshProducts();
         })
         .catch(() => {
           const permissionError = new FirestorePermissionError({
@@ -152,7 +153,6 @@ export default function Home() {
             description: 'O produto foi excluído.',
           });
           setProductToDelete(null);
-          refreshProducts();
         })
         .catch(() => {
           const permissionError = new FirestorePermissionError({
@@ -510,7 +510,6 @@ export default function Home() {
         <AddProductDialog
             isOpen={isAddProductOpen}
             onOpenChange={setIsAddProductOpen}
-            onProductAdded={refreshProducts}
         />
       )}
       <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
