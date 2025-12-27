@@ -65,12 +65,17 @@ export default function Home() {
   const isLoading = areProductsLoading || isSiteInfoLoading || areCategoriesLoading;
 
   const displayCategories = useMemo(() => {
-    if (!categories) return [];
-    // Sort categories alphabetically using localeCompare for correct accent handling
-    const sortedCategories = [...categories].sort((a, b) => 
-      a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
+    if (!categories) return ['Todos'];
+    // 1. Get all category names
+    const categoryNames = categories.map(c => c.name);
+    // 2. Create a unique set of names
+    const uniqueNames = Array.from(new Set(categoryNames));
+    // 3. Sort the unique names
+    const sortedUniqueNames = uniqueNames.sort((a, b) => 
+      a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
     );
-    return ['Todos', ...sortedCategories.map(c => c.name)];
+    // 4. Add 'Todos' to the beginning
+    return ['Todos', ...sortedUniqueNames];
   }, [categories]);
   
   // One-time fix for swapped phone numbers in Firestore
