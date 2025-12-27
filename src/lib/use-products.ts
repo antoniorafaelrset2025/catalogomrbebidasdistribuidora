@@ -40,7 +40,11 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
     }
 
   } catch (error) {
-    console.warn("Could not check or seed database (this is expected on first load without auth):", error);
+    // This can happen if the user is not authenticated on first load, which is fine.
+    // The rules prevent writing, and we don't want to spam the console.
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Could not check or seed database (this is expected on first load without auth):", error);
+    }
   }
 }
 
@@ -67,8 +71,8 @@ export function useProducts() {
     setKey(prevKey => prevKey + 1);
   }, []);
 
-  // Use firestore products if available, otherwise fallback to static products.
-  const products = firestoreProducts ?? staticProducts;
+  // Use firestore products if available, otherwise fallback to static products for initial render.
+  const products = firestoreProducts || staticProducts;
   
   return { products, isLoading: isFirestoreLoading, error, refreshProducts };
 }
