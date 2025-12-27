@@ -60,14 +60,14 @@ export default function Home() {
   const [fieldValue, setFieldValue] = useState('');
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  const [selectedCategory, setSelectedCategory] = useState<string>('TODOS');
 
   const isLoading = areProductsLoading || isSiteInfoLoading || areCategoriesLoading;
 
   const displayCategories = useMemo(() => {
-    if (!categories) return ['Todos'];
-    // 1. Get all category names
-    const categoryNames = categories.map(c => c.name);
+    if (!categories) return ['TODOS'];
+    // 1. Get all category names and convert to uppercase
+    const categoryNames = categories.map(c => c.name.toUpperCase());
     // 2. Create a unique set of names
     const uniqueNames = Array.from(new Set(categoryNames));
     // 3. Sort the unique names
@@ -75,7 +75,7 @@ export default function Home() {
       a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
     );
     // 4. Add 'Todos' to the beginning
-    return ['Todos', ...sortedUniqueNames];
+    return ['TODOS', ...sortedUniqueNames];
   }, [categories]);
   
   // One-time fix for swapped phone numbers in Firestore
@@ -113,7 +113,7 @@ export default function Home() {
         .includes(searchTerm.toLowerCase());
 
       const matchesCategory =
-        selectedCategory === 'Todos' || product.category === selectedCategory;
+        selectedCategory === 'TODOS' || product.category.toUpperCase() === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });

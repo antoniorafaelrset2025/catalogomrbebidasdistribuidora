@@ -10,8 +10,8 @@ import { products } from '@/lib/products';
 
 let seedingChecked = false;
 
-// Derive unique categories directly from the products list.
-const initialCategories = [...new Set(products.map(p => p.category))];
+// Derive unique, uppercase categories directly from the products list.
+const initialCategories = [...new Set(products.map(p => p.category.toUpperCase()))];
 
 async function seedDatabaseIfEmpty(firestore: Firestore) {
   if (seedingChecked) {
@@ -32,7 +32,7 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
         });
         
         await batch.commit();
-        console.log('Database seeded successfully with unique initial categories!');
+        console.log('Database seeded successfully with unique, uppercase initial categories!');
     } else {
         console.log('Categories collection already has data. Skipping seed.');
     }
