@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { collection, doc, writeBatch, getDocs, Firestore } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -46,6 +46,7 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
 
 export function useProducts() {
   const firestore = useFirestore();
+  const [key, setKey] = useState(0); 
   
   useEffect(() => {
     if (firestore) {
@@ -56,12 +57,16 @@ export function useProducts() {
   const productsQuery = useMemoFirebase(() => {
       if (!firestore) return null;
       return collection(firestore, 'products');
-  }, [firestore]);
+  }, [firestore, key]);
 
 
   const { data: firestoreProducts, isLoading: isFirestoreLoading, error } = useCollection<Product>(productsQuery);
 
+  const refreshProducts = useCallback(() => {
+    setKey(prevKey => prevKey + 1);
+  }, []);
+
   const products = firestoreProducts ?? [];
   
-  return { products, isLoading: isFirestoreLoading, error };
+  return { products, isLoading: isFirestoreLoading, error, refreshProducts };
 }

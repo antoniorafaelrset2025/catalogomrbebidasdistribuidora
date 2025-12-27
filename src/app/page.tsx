@@ -39,14 +39,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-
 type EditableField = 'siteName' | 'heroTitle1' | 'heroTitle2' | 'heroLocation' | 'heroPhoneDisplay' | 'heroLocation2' | 'heroPhoneDisplay2';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
-  const { products, isLoading: areProductsLoading } = useProducts();
+  const { products, isLoading: areProductsLoading, refreshProducts } = useProducts();
   const { siteInfo, isLoading: isSiteInfoLoading, siteInfoRef, refreshSiteInfo } = useSiteInfo();
-  const { categories, isLoading: areCategoriesLoading } = useCategories();
+  const { categories, isLoading: areCategoriesLoading, refreshCategories } = useCategories();
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -66,15 +65,9 @@ export default function Home() {
 
   const displayCategories = useMemo(() => {
     if (!categories) return ['TODOS'];
-    // 1. Get all category names and convert to uppercase
     const categoryNames = categories.map(c => c.name.toUpperCase());
-    // 2. Create a unique set of names
     const uniqueNames = Array.from(new Set(categoryNames));
-    // 3. Sort the unique names
-    const sortedUniqueNames = uniqueNames.sort((a, b) => 
-      a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
-    );
-    // 4. Add 'Todos' to the beginning
+    const sortedUniqueNames = uniqueNames.sort((a, b) => a.localeCompare(b, 'pt-BR'));
     return ['TODOS', ...sortedUniqueNames];
   }, [categories]);
   
@@ -131,6 +124,7 @@ export default function Home() {
             description: 'O produto foi atualizado.',
           });
           setEditingProductId(null);
+          refreshProducts(); // Force refresh
         })
         .catch(() => {
           const permissionError = new FirestorePermissionError({
@@ -153,6 +147,7 @@ export default function Home() {
             description: 'O produto foi excluído.',
           });
           setProductToDelete(null);
+          refreshProducts(); // Force refresh
         })
         .catch(() => {
           const permissionError = new FirestorePermissionError({
@@ -510,6 +505,10 @@ export default function Home() {
         <AddProductDialog
             isOpen={isAddProductOpen}
             onOpenChange={setIsAddProductOpen}
+            onProductAdded={() => {
+                refreshProducts();
+                refreshCategories();
+            }}
         />
       )}
       <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
