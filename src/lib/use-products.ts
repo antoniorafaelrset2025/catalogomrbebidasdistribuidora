@@ -25,10 +25,8 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
         staticProducts.forEach((product) => {
             const docData = {
                 ...product,
-                // Ensure there's a description, even if it's empty
                 description: product.description || '' 
             };
-            // When seeding, we use the predefined ID from the static list
             const docRef = doc(productsCollectionRef, product.id);
             batch.set(docRef, docData);
         });
@@ -40,8 +38,6 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
     }
 
   } catch (error) {
-    // This can happen if the user is not authenticated on first load, which is fine.
-    // The rules prevent writing, and we don't want to spam the console.
     if (process.env.NODE_ENV === 'development') {
       console.log("Could not check or seed database (this is expected on first load without auth):", error);
     }
@@ -50,7 +46,7 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
 
 export function useProducts() {
   const firestore = useFirestore();
-  const [key, setKey] = useState(0); // State to force re-render
+  const [key, setKey] = useState(0); 
   
   useEffect(() => {
     if (firestore) {
@@ -67,12 +63,10 @@ export function useProducts() {
   const { data: firestoreProducts, isLoading: isFirestoreLoading, error } = useCollection<Product>(productsQuery);
 
   const refreshProducts = useCallback(() => {
-    // Changing the key will re-create the query and trigger useCollection to refetch.
     setKey(prevKey => prevKey + 1);
   }, []);
 
-  // Use firestore products if available, otherwise fallback to static products for initial render.
-  const products = firestoreProducts || staticProducts;
+  const products = firestoreProducts ?? [];
   
   return { products, isLoading: isFirestoreLoading, error, refreshProducts };
 }

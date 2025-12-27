@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -11,10 +10,8 @@ import { products } from '@/lib/products';
 
 let seedingChecked = false;
 
-// Deriva as categorias diretamente da lista de produtos para garantir consistência
-// e usa um Set para garantir que a lista seja única.
+// Derive unique categories directly from the products list.
 const initialCategories = [...new Set(products.map(p => p.category))];
-
 
 async function seedDatabaseIfEmpty(firestore: Firestore) {
   if (seedingChecked) {
@@ -29,9 +26,8 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
         console.log('Categories collection is empty. Seeding database...');
         const batch = writeBatch(firestore);
         
-        // A lista initialCategories já é garantidamente única
         initialCategories.forEach((categoryName) => {
-            const docRef = doc(categoriesCollectionRef); // Auto-generate ID
+            const docRef = doc(collection(firestore, 'categories'));
             batch.set(docRef, { name: categoryName });
         });
         
@@ -42,13 +38,15 @@ async function seedDatabaseIfEmpty(firestore: Firestore) {
     }
 
   } catch (error) {
-    console.warn("Could not check or seed categories collection:", error);
+    if (process.env.NODE_ENV === 'development') {
+        console.log("Could not check or seed categories collection (this is expected on first load without auth):", error);
+    }
   }
 }
 
 export function useCategories() {
   const firestore = useFirestore();
-  const [key, setKey] = useState(0); // State to force re-render
+  const [key, setKey] = useState(0); 
   
   useEffect(() => {
     if (firestore) {
@@ -58,7 +56,6 @@ export function useCategories() {
 
   const categoriesQuery = useMemoFirebase(() => {
       if (!firestore) return null;
-      // Order categories by name for consistent display
       return query(collection(firestore, 'categories'), orderBy('name'));
   }, [firestore, key]);
 
@@ -66,11 +63,10 @@ export function useCategories() {
   const { data: firestoreCategories, isLoading, error } = useCollection<Omit<Category, 'id'>>(categoriesQuery);
 
   const refreshCategories = useCallback(() => {
-    // Changing the key will re-create the query and trigger useCollection to refetch.
     setKey(prevKey => prevKey + 1);
   }, []);
 
-  const categories: Category[] | null = firestoreCategories ? firestoreCategories.map(c => ({...c, name: c.name as string})) : null;
+  const categories: Category[] | null = firestoreCategories ? firestoreCategories.map(c => ({...c, name: c.name as string})) : [];
   
   return { categories, isLoading, error, refreshCategories };
 }

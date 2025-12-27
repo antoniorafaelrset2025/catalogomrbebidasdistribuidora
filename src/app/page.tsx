@@ -368,7 +368,7 @@ export default function Home() {
             )}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {areCategoriesLoading ? (
+            {areCategoriesLoading && (!categories || categories.length === 0) ? (
               [...Array(5)].map((_, i) => <Skeleton key={i} className="h-8 w-24 rounded-full" />)
             ) : (
               displayCategories.map((category) => (
